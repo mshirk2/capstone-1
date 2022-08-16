@@ -29,147 +29,134 @@ connect_db(app)
 # User signup/login/logout
 
 
-# @app.before_request
-# def add_user_to_g():
-#     """If we're logged in, add curr user to Flask global."""
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
 
-#     if CURR_USER_KEY in session:
-#         g.user = User.query.get(session[CURR_USER_KEY])
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
 
-#     else:
-#         g.user = None
-
-
-# def do_login(user):
-#     """Log in user."""
-
-#     session[CURR_USER_KEY] = user.id
+    else:
+        g.user = None
 
 
-# def do_logout():
-#     """Logout user."""
+def do_login(user):
+    """Log in user."""
 
-#     if CURR_USER_KEY in session:
-#         del session[CURR_USER_KEY]
-
-
-# @app.route('/signup', methods=["GET", "POST"])
-# def signup():
-#     """Handle user signup.
-
-#     Create new user and add to DB. Redirect to home page.
-
-#     If form not valid, present form.
-
-#     If the there already is a user with that username: flash message
-#     and re-present form.
-#     """
-
-#     form = UserAddForm()
-
-#     if form.validate_on_submit():
-#         try:
-#             user = User.signup(
-#                 username=form.username.data,
-#                 password=form.password.data,
-#                 email=form.email.data,
-#                 image_url=form.image_url.data or User.image_url.default.arg,
-#             )
-#             db.session.commit()
-
-#         except IntegrityError:
-#             flash("Username already taken", 'danger')
-#             return render_template('users/signup.html', form=form)
-
-#         do_login(user)
-
-#         return redirect("/")
-
-#     else:
-#         return render_template('users/signup.html', form=form)
+    session[CURR_USER_KEY] = user.id
 
 
-# @app.route('/login', methods=["GET", "POST"])
-# def login():
-#     """Handle user login."""
+def do_logout():
+    """Logout user."""
 
-#     form = LoginForm()
-
-#     if form.validate_on_submit():
-#         user = User.authenticate(form.username.data,
-#                                  form.password.data)
-
-#         if user:
-#             do_login(user)
-#             flash(f"Hello, {user.username}!", "success")
-#             return redirect("/")
-
-#         flash("Invalid credentials.", 'danger')
-
-#     return render_template('users/login.html', form=form)
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
 
 
-# @app.route('/logout')
-# def logout():
-#     """Handle logout of user."""
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    """Handle user signup.
 
-#     do_logout()
-#     flash("Goodbye!", "success")
-#     return redirect("/login")
+    Create new user and add to DB. Redirect to home page.
+
+    If form not valid, present form.
+
+    If the there already is a user with that username: flash message
+    and re-present form.
+    """
+
+    form = UserAddForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                image_url=form.image_url.data or User.image_url.default.arg,
+            )
+            db.session.commit()
+
+        except IntegrityError:
+            flash("Username already taken", 'danger')
+            return render_template('users/signup.html', form=form)
+
+        do_login(user)
+
+        return redirect("/")
+
+    else:
+        return render_template('users/signup.html', form=form)
 
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """Handle user login."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/")
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('users/login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    """Handle logout of user."""
+
+    do_logout()
+    flash("Goodbye!", "success")
+    return redirect("/login")
 
 
 
-# ##############################################################################
-# # Homepage and error pages
 
 
-# @app.route('/')
-# def homepage():
-#     """Show homepage:
-#     - anon users: no messages
-#     - logged in: 100 most recent messages of followed_users
-#     """
-
-#     if g.user:
-#         following_ids = [f.id for f in g.user.following] + [g.user.id]
-
-#         messages = (Message
-#                     .query
-#                     .filter(Message.user_id.in_(following_ids))
-#                     .order_by(Message.timestamp.desc())
-#                     .limit(100)
-#                     .all())
-
-#         liked_msg_ids = [msg.id for msg in g.user.likes]
-
-#         return render_template('home.html', messages=messages, likes=liked_msg_ids)
-
-#     else:
-#         return render_template('home-anon.html')
+##############################################################################
+# Homepage and error pages
 
 
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     """404 Page Not Found"""
+@app.route('/')
+def homepage():
+    """Show homepage"""
 
-#     return render_template('404.html'), 404
+    if g.user:
+
+        return render_template('home.html')
+
+    else:
+        return render_template('home-anon.html')
 
 
-# ##############################################################################
-# # Turn off all caching in Flask
-# #   (useful for dev; in production, this kind of stuff is typically
-# #   handled elsewhere)
-# #
-# # https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 Page Not Found"""
 
-# @app.after_request
-# def add_header(req):
-#     """Add non-caching headers on every request."""
+    return render_template('404.html'), 404
 
-#     req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-#     req.headers["Pragma"] = "no-cache"
-#     req.headers["Expires"] = "0"
-#     req.headers['Cache-Control'] = 'public, max-age=0'
-#     return req
+
+##############################################################################
+# Turn off all caching in Flask
+#   (useful for dev; in production, this kind of stuff is typically
+#   handled elsewhere)
+#
+# https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
+
+@app.after_request
+def add_header(req):
+    """Add non-caching headers on every request."""
+
+    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    req.headers["Pragma"] = "no-cache"
+    req.headers["Expires"] = "0"
+    req.headers['Cache-Control'] = 'public, max-age=0'
+    return req
