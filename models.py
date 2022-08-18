@@ -17,6 +17,36 @@ def connect_db(app):
     db.init_app(app)
 
 
+class Restroom(db.Model):
+    """Restroom model"""
+
+    __tablename__ = "restrooms"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
+
+    name = db.Column(
+        db.Text,
+        nullable=False,
+    )
+
+    saved_by_user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    def to_dict(self):
+        """Return dictionary of restroom info"""
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "saved_by_user_id": self.saved_by_user_id,
+        }
+
 class User(db.Model):
     """User in the system."""
 

@@ -1,11 +1,11 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, UserEditForm, LoginForm
-from models import db, connect_db, User
+from models import db, connect_db, User, Restroom
 
 CURR_USER_KEY = "curr_user"
 
@@ -25,7 +25,7 @@ toolbar = DebugToolbarExtension(app)
 connect_db(app)
 
 
-##############################################################################
+#########################################################################
 # User signup/login/logout
 
 
@@ -118,10 +118,28 @@ def logout():
     return redirect("/login")
 
 
+#########################################################################
+# API routes
+
+@app.route("/api/restrooms")
+def get_restrooms():
+    """Get data about all restrooms"""
+
+    restrooms = [restroom.to_dict() for restroom in Restroom.query.all()]
+
+    return jsonify(restrooms=restrooms)
 
 
+@app.route("/api/restrooms/<int:restroom_id")
+def show_restroom(restroom_id):
+    """Get data about a single restroom"""
 
-##############################################################################
+    restroom = Restroom.query.get_or_404(restroom_id)
+
+    return jsonify(restroom=restroom.to_dict())
+
+
+#########################################################################
 # Homepage and error pages
 
 
@@ -144,7 +162,7 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
-##############################################################################
+#########################################################################
 # Turn off all caching in Flask
 #   (useful for dev; in production, this kind of stuff is typically
 #   handled elsewhere)
