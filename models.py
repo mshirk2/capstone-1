@@ -8,10 +8,7 @@ db = SQLAlchemy()
 
 
 def connect_db(app):
-    """Connect this database to provided Flask app.
-
-    You should call this in your Flask app.
-    """
+    """Connect this database to app."""
 
     db.app = app
     db.init_app(app)
@@ -22,15 +19,8 @@ class Restroom(db.Model):
 
     __tablename__ = "restrooms"
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-    )
-
-    name = db.Column(
-        db.Text,
-        nullable=False,
-    )
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False)
 
     saved_by_user_id = db.Column(
         db.Integer,
@@ -52,42 +42,17 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-    )
-
-    email = db.Column(
-        db.Text,
-        nullable=False,
-        unique=True,
-    )
-
-    username = db.Column(
-        db.Text,
-        nullable=False,
-        unique=True,
-    )
-
-    location = db.Column(
-        db.Text,
-        default="Location not provided"
-    )
-
-    password = db.Column(
-        db.Text,
-        nullable=False,
-    )
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.Text, nullable=False, unique=True)
+    username = db.Column(db.Text, nullable=False, unique=True)
+    password = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
     @classmethod
     def signup(cls, username, email, password):
-        """Sign up user.
-
-        Hashes password and adds user to system.
-        """
+        """Register user with hashed password. Returns user."""
 
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 

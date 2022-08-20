@@ -1,3 +1,6 @@
+const $searchButton = $('#search-button');
+const $searchResults = $('#search-results');
+
 const BASE_URL = "https://www.refugerestrooms.org/api"
 
 function generateHTML(restroom) {
@@ -17,4 +20,17 @@ async function showRestrooms(){
         let newRestroom = $(generateHTML(restroomData));
         $("#restrooms-list").append(newRestroom);
     }
+}
+
+// Search button Event Handler
+$searchButton.on('click', (evt)=>{
+    evt.preventDefault();
+
+    getSearchResults();
+})
+
+const getSearchResults = async ()=>{
+    // clear previous search results
+    $searchResults.empty();
+
 }

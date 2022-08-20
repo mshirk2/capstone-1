@@ -3,7 +3,6 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-
 from forms import UserAddForm, UserEditForm, LoginForm
 from models import db, connect_db, User, Restroom
 
@@ -121,7 +120,7 @@ def logout():
 #########################################################################
 # API routes
 
-@app.route("/api/restrooms")
+@app.route("/restrooms")
 def get_restrooms():
     """Get data about all restrooms"""
 
@@ -130,7 +129,7 @@ def get_restrooms():
     return jsonify(restrooms=restrooms)
 
 
-@app.route("/api/restrooms/<int:restroom_id")
+@app.route("/restrooms/<int:restroom_id>")
 def show_restroom(restroom_id):
     """Get data about a single restroom"""
 
