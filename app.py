@@ -1,32 +1,34 @@
-import os
-
 from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
-from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-from forms import UserAddForm, UserEditForm, LoginForm
+from forms import RegisterForm, UserEditForm, LoginForm
 from models import db, connect_db, User, Restroom
-
-CURR_USER_KEY = "curr_user"
+import os
 
 app = Flask(__name__)
 
-# Get DB_URI from environ variable (useful for production/testing) or,
-# if not set there, use development local db.
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///restroom-finder'))
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
+
+# Access tokens
+from secrets import SECRET_KEY, MAPBOX_TOKEN
+os.environ['SECRET_KEY'] = SECRET_KEY
+os.environ['MAPBOX_TOKEN'] = MAPBOX_TOKEN
+
+# Debug Toolbar
+from flask_debugtoolbar import DebugToolbarExtension
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
-toolbar = DebugToolbarExtension(app)
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+debug = DebugToolbarExtension(app)
 
 connect_db(app)
+
+CURR_USER_KEY = "curr_user"
 
 
 #########################################################################
 # User signup/login/logout
-
 
 @app.before_request
 def add_user_to_g():
@@ -118,6 +120,34 @@ def logout():
 
 
 #########################################################################
+# Homepage, search, and error pages
+
+
+@app.route('/')
+def root():
+    """Homepage. If user is logged in, redirect ot search page, otherwise show landing page."""
+
+    if g.user:
+        return redirect("/search")
+
+    return render_template('landing.html')
+
+
+@app.route('/search')
+def show_search_page():
+    """Show search page, including search form and results"""
+
+    return render_template("search.html", token=os.environ['MAPBOX_TOKEN'])
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 Page Not Found"""
+
+    return render_template('404.html'), 404
+
+
+#########################################################################
 # API routes
 
 @app.route("/restrooms")
@@ -137,43 +167,3 @@ def show_restroom(restroom_id):
 
     return jsonify(restroom=restroom.to_dict())
 
-
-#########################################################################
-# Homepage and error pages
-
-
-@app.route('/')
-def homepage():
-    """Show homepage"""
-
-    if g.user:
-
-        return render_template('home.html')
-
-    else:
-        return render_template('home-anon.html')
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    """404 Page Not Found"""
-
-    return render_template('404.html'), 404
-
-
-#########################################################################
-# Turn off all caching in Flask
-#   (useful for dev; in production, this kind of stuff is typically
-#   handled elsewhere)
-#
-# https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
-
-@app.after_request
-def add_header(req):
-    """Add non-caching headers on every request."""
-
-    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    req.headers["Pragma"] = "no-cache"
-    req.headers["Expires"] = "0"
-    req.headers['Cache-Control'] = 'public, max-age=0'
-    return req

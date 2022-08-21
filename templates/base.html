@@ -9,26 +9,31 @@
     <link rel="stylesheet" href="/static/stylesheets/style.css">
 </head>
 <body>
-  
+    <!-- Nav bar -->
     <nav class="navbar navbar-expand">
         <div class="container-fluid">
           <div class="navbar-header">
             <a href="/" class="navbar-brand">
-              <!-- <img src="/static/images/warbler-logo.png" alt="logo"> -->
               <span>Restroom Finder</span>
             </a>
           </div>
           <ul class="nav navbar-nav navbar-right">
-            {% if request.endpoint != None %}
+
+            <!-- Search -->
+            <!-- {% if request.endpoint != None %}
             <li>
-              <form class="navbar-form navbar-right" action="/users">
+              <form class="navbar-form navbar-right">
                 <input name="q" class="form-control" placeholder="Find a Restroom" id="search-button">
                 <button class="btn btn-default">
                   <span class="fa fa-search"></span>
                 </button>
               </form>
             </li>
-            {% endif %}
+            {% endif %} -->
+
+            <li><a href="/search">Search</a></li>
+
+            <!-- Register/Login/Logout -->
             {% if not g.user %}
             <li><a href="/signup">Sign up</a></li>
             <li><a href="/login">Log in</a></li>
@@ -42,16 +47,21 @@
             {% endif %}
           </ul>
         </div>
-      </nav>
-      <div class="container">
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <!-- Flashed Messages -->
         {% for category, message in get_flashed_messages(with_categories=True) %}
         <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %}
-      
+
+        <!-- Flex Content -->
         {% block content %}
         {% endblock %}
       
-      </div>
+    </div>
 
 </body>
 </html>
