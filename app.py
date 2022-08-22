@@ -178,7 +178,6 @@ def get_reverse_geocode():
     mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?worldview=cn&access_token={token}"
 
     resp = requests.get(mapbox_url)
-
     result = resp.json()['features'][0]['place_name']
 
     return (jsonify(result=result), 200)
