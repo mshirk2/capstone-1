@@ -150,20 +150,36 @@ def page_not_found(e):
 #########################################################################
 # API routes
 
-@app.route("/restrooms")
-def get_restrooms():
-    """Get data about all restrooms"""
+# @app.route("/restrooms")
+# def get_restrooms():
+#     """Get data about all restrooms"""
 
-    restrooms = [restroom.to_dict() for restroom in Restroom.query.all()]
+#     restrooms = [restroom.to_dict() for restroom in Restroom.query.all()]
 
-    return jsonify(restrooms=restrooms)
+#     return jsonify(restrooms=restrooms)
 
 
-@app.route("/restrooms/<int:restroom_id>")
-def show_restroom(restroom_id):
-    """Get data about a single restroom"""
+# @app.route("/restrooms/<int:restroom_id>")
+# def show_restroom(restroom_id):
+#     """Get data about a single restroom"""
 
-    restroom = Restroom.query.get_or_404(restroom_id)
+#     restroom = Restroom.query.get_or_404(restroom_id)
 
-    return jsonify(restroom=restroom.to_dict())
+#     return jsonify(restroom=restroom.to_dict())
+
+@app.route("/api/reverse-geocode")
+def get_reverse_geocode():
+    """Get mapbox result using coordinates"""
+
+    lat = request.json['lat']
+    lon = request.json['lon']
+    token = os.environ['MAPBOX_TOKEN']
+
+    mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?worldview=cn&access_token={token}"
+
+    resp = requests.get(mapbox_url)
+
+    result = resp.json()['features'][0]['place_name']
+
+    return (jsonify(result=result), 200)
 

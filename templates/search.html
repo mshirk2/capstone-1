@@ -4,13 +4,31 @@
 
 <h1>Search Page</h1>
 <div id="search-container" class="col mt-3 px-0">
+
+    <!-- Search Form -->
     <div id="search-form">
         <div class="form-group">
-            <div class="geocoder"></div>
+            <div class="geocoder-container"></div>
         </div>
     </div>
-</div>
 
-<ul id="search-results"></ul>
+    <!-- Search Results -->
+    <div id="results-container">
+
+        <!-- Results List -->
+        <div id="list-container" class="col pr-md-0">
+            <ul id="results-list" class="list-group"></ul>
+        </div>
+
+        <!-- Results Map -->
+        <div id="map-container" class="col col-12">
+            <div id="map"></div>
+        </div>
+
+    </div>
+
+    <script>mapboxgl.accessToken = '{{token}}'</script>
+
+</div>
 
 {% endblock %}
