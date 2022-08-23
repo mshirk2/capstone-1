@@ -28,7 +28,6 @@ const $mapContainer = $('#map-container');
 $searchButton.on('click', (evt) => {
     evt.preventDefault();
 
-
     handleSearch();
 })
 
@@ -64,15 +63,19 @@ const getResults = async (lat, lon) => {
 
     const per_page = NUM_RESULTS;
 
-    resp = axios.get(`${BASE_URL}/v1/restrooms/by_location?lat=${lat}&lng=${lon}&ada=${$isAccessible}&unisex=${$isUnisex}&per_page=${per_page}`)
 
+    resp = axios.get(`${BASE_URL}/v1/restrooms/by_location?lat=39.9526&lng=75.1652&ada=false&unisex=false&per_page=${per_page}`)
+    console.log(resp)
     displayResults(resp)
 }
 
 
 const displayResults = async (resp) => {
     let restrooms = resp.data;
-
+    
+    if (!restrooms){
+        console.log('no restrooms found')
+        return}
     for (let i = 0; i < restrooms.length; i++){
         const restroom = restrooms[i];
 
