@@ -28,6 +28,7 @@ const $mapContainer = $('#map-container');
 $searchButton.on('click', (evt) => {
     evt.preventDefault();
 
+
     handleSearch();
 })
 

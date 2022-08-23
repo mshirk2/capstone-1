@@ -10,6 +10,31 @@
         <div class="form-group">
             <div class="geocoder-container"></div>
         </div>
+        <div class="form-group">
+            <form>
+                <input name="q" class="form-control" placeholder="Find a Restroom" id="search-button">
+
+                <!-- Search Filters -->
+                <div>
+                    <input class="form-check-input" type="checkbox" id="accessible"/>
+                    <label class="form-check-label" for="accessible">Accessible</label>
+                </div>
+                <div>
+                    <input class="form-check-input" type="checkbox" id="unisex"/>
+                    <label class="form-check-label" for="unisex">Unisex</label>
+                </div>
+                <div>
+                    <input class="form-check-input" type="checkbox" id="changing-table"/>
+                    <label class="form-check-label" for="changing-table">Changing Table</label>
+                </div>
+
+                <!-- Search button -->
+                <button class="btn btn-primary" id="search-button">
+                    <span class="fa fa-search"></span>
+                    Search
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Search Results -->
