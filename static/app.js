@@ -28,7 +28,6 @@ const $mapContainer = $('#map-container');
 // Search button Event Handler
 $searchButton.on('click', (evt) => {
     evt.preventDefault();
-
     handleSearch();
 })
 
@@ -46,11 +45,8 @@ const handleSearch = async () => {
     $resultsList.empty();
     clearMapMarkers();
 
-    // get coordinates based on search input
-    const coordinates = await setCurrentLocation();
-    console.log('Coordinates =', coordinates);
-
-    // await getResults(coordinates.lat, coordinates.lon);
+    // get coordinates based on current location
+    await setCurrentLocation();
 
 }
 
