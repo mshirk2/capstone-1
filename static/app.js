@@ -6,6 +6,7 @@ let CURRENT_LON;
 let GEOCODER;
 const $geocoderContainer = $('#geocoder-container');
 const $searchButton = $('#search-button');
+const $useLocation = $('#use-location');
 
 // Search filters
 const $isAccessible = $('#accessible')
@@ -31,6 +32,12 @@ $searchButton.on('click', (evt) => {
     handleSearch();
 })
 
+// Use Current Location Event Handler
+$useLocation.on('click', (evt) => {
+    evt.preventDefault();
+    handleSearch();
+})
+
 
 const handleSearch = async () => {
 
@@ -40,32 +47,45 @@ const handleSearch = async () => {
     clearMapMarkers();
 
     // get coordinates based on search input
-    const coordinates = getCoordinates();
+    const coordinates = await setCurrentLocation();
+    console.log('Coordinates =', coordinates);
 
-    await getResults(coordinates.lat, coordinates.lon);
+    // await getResults(coordinates.lat, coordinates.lon);
 
 }
 
 
-const getCoordinates = () => {
-    
-    // Default to current location
-    let coords = {
-        lat: CURRENT_LAT,
-        lon: CURRENT_LON,
-    };
+const setCurrentLocation = async () => {
+    // Default coordinates
+    CURRENT_LAT = 39.9543;
+    CURRENT_LON = 75.1657;
 
-    return coords;
-}
+    if(!navigator.geolocation) {
+        console.log('Geolocation is not supported')
+        await initializeMap(CURRENT_LAT, CURRENT_LON);
+    } else {
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                CURRENT_LAT = position.coords.latitude;
+                CURRENT_LON = position.coords.longitude;
+                console.log('lat, lon = ', CURRENT_LAT, CURRENT_LON)
+                await getResults(CURRENT_LAT, CURRENT_LON);
+                return coords = {
+                    lat: CURRENT_LAT,
+                    lon: CURRENT_LON,
+                };
+            }
+        );
+    }
+};
 
 
 const getResults = async (lat, lon) => {
 
     const per_page = NUM_RESULTS;
 
-
     resp = axios
-        .get(`${BASE_URL}/v1/restrooms?page=1&per_page=${per_page}&offset=0`)
+        .get(`${BASE_URL}/v1/restrooms/by_location?page=1&per_page=${per_page}&offset=0&lat=${lat}&lng=${lon}`)
         .then(async (resp) => {
             let restrooms = resp.data;
     
@@ -80,7 +100,8 @@ const getResults = async (lat, lon) => {
                     lat: restroom.latitude,
                     lon: restroom.longitude,
                 };
-        
+                
+                console.log(restroomData);
                 RESTROOM_RESULTS.set(restroom.id, restroom);
         
                 addMapMarker(restroom);
@@ -131,8 +152,8 @@ const addResultToDOM = (restroom) => {
     let newLi = $(`
     <li class="list-group-item">
         <h4>${name}</h4>
-        <p>${street}</p>
-        <p>${city}, ${state}</p>
+        <p class="mb-0">${street}</p>
+        <p class="mb-0">${city}, ${state}</p>
     </li>
     `);
 
