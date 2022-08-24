@@ -64,39 +64,40 @@ const getResults = async (lat, lon) => {
     const per_page = NUM_RESULTS;
 
 
-    resp = axios.get(`${BASE_URL}/v1/restrooms/by_location?lat=39.9526&lng=75.1652&ada=false&unisex=false&per_page=${per_page}`)
-    console.log(resp)
-    displayResults(resp)
-}
-
-
-const displayResults = async (resp) => {
-    let restrooms = resp.data;
+    resp = axios
+        .get(`${BASE_URL}/v1/restrooms?page=1&per_page=${per_page}&offset=0`)
+        .then(async (resp) => {
+            let restrooms = resp.data;
     
-    if (!restrooms){
-        console.log('no restrooms found')
-        return}
-    for (let i = 0; i < restrooms.length; i++){
-        const restroom = restrooms[i];
+            if (!restrooms){
+                console.log('no restrooms found')
+                return}
+            for (let i = 0; i < restrooms.length; i++){
+                const restroom = restrooms[i];
+        
+                const restroomData = {
+                    name: restroom.name,
+                    lat: restroom.latitude,
+                    lon: restroom.longitude,
+                };
+        
+                RESTROOM_RESULTS.set(restroom.id, restroom);
+        
+                addMapMarker(restroom);
+                addResultToDOM(restroom);
+        
+                if (RESTROOM_RESULTS.size === NUM_RESULTS){
+                    break;
+                }
+            }
+        
+            return restrooms
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
 
-        const restroomData = {
-            name: restroom.name,
-            lat: restroom.latitude,
-            lon: restroom.longitude,
-        };
-
-        RESTROOM_RESULTS.set(restroom.id, restroom);
-
-        addMapMarker(restroom);
-        addResultToDOM(restroom);
-
-        if (RESTROOM_RESULTS.size === NUM_RESULTS){
-            break;
-        }
-    }
-
-    return restrooms
-}
 
 const addMapMarker = (restroom) => {
 
