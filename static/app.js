@@ -9,9 +9,10 @@ const $searchButton = $('#search-button');
 const $useLocation = $('#use-location');
 
 // Search filters
-const $isAccessible = $('#accessible')
-const $isUnisex = $('#unisex')
-const $hasChangingTable = $('#changing-table')
+const $isAccessible = $('#accessible');
+const $isUnisex = $('#unisex');
+const $hasChangingTable = $('#changing-table');
+const $query = $('#query');
 
 // Search output
 let RESTROOM_RESULTS = new Map();
@@ -25,20 +26,20 @@ const $mapContainer = $('#map-container');
 
 //////////////////////////////////////////////////////////////////
 
-// Search button Event Handler
+// Search query Event Handler
 $searchButton.on('click', (evt) => {
     evt.preventDefault();
-    handleSearch();
+    handleSearchByQuery();
 })
 
-// Use Current Location Event Handler
+// Search Current Location Event Handler
 $useLocation.on('click', (evt) => {
     evt.preventDefault();
-    handleSearch();
+    handleSearchByLocation();
 })
 
 
-const handleSearch = async () => {
+const handleSearchByLocation = async () => {
 
     // clear previous search results from internal storage, results list, and map
     RESTROOM_RESULTS.clear();
@@ -65,7 +66,7 @@ const setCurrentLocation = async () => {
                 CURRENT_LAT = position.coords.latitude;
                 CURRENT_LON = position.coords.longitude;
                 console.log('lat, lon = ', CURRENT_LAT, CURRENT_LON)
-                await getResults(CURRENT_LAT, CURRENT_LON);
+                await getResultsByLocation(CURRENT_LAT, CURRENT_LON);
                 return coords = {
                     lat: CURRENT_LAT,
                     lon: CURRENT_LON,
@@ -76,12 +77,67 @@ const setCurrentLocation = async () => {
 };
 
 
-const getResults = async (lat, lon) => {
+const getResultsByLocation = async (lat, lon) => {
 
     const per_page = NUM_RESULTS;
 
     resp = axios
-        .get(`${BASE_URL}/v1/restrooms/by_location?page=1&per_page=${per_page}&offset=0&lat=${lat}&lng=${lon}`)
+        .get(`${BASE_URL}/v1/restrooms/by_location?page=1&per_page=${per_page}&offset=0&lat=${lat}&lng=${lon}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
+        .then(async (resp) => {
+            let restrooms = resp.data;
+    
+            if (!restrooms){
+                console.log('no restrooms found')
+                return}
+            for (let i = 0; i < restrooms.length; i++){
+                const restroom = restrooms[i];
+        
+                const restroomData = {
+                    name: restroom.name,
+                    lat: restroom.latitude,
+                    lon: restroom.longitude,
+                };
+                
+                console.log(restroomData);
+                RESTROOM_RESULTS.set(restroom.id, restroom);
+        
+                addMapMarker(restroom);
+                addResultToDOM(restroom);
+        
+                if (RESTROOM_RESULTS.size === NUM_RESULTS){
+                    break;
+                }
+            }
+        
+            return restrooms
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
+
+const handleSearchByQuery = async () => {
+
+    // clear previous search results from internal storage, results list, and map
+    RESTROOM_RESULTS.clear();
+    $resultsList.empty();
+    clearMapMarkers();
+
+    // get coordinates based on query
+
+    console.log($query);
+    await getResultsByQuery($query);
+
+}
+
+const getResultsByQuery = async (query) => {
+
+    const per_page = NUM_RESULTS;
+
+    resp = axios
+        .get(`${BASE_URL}/v1/restrooms/search?page=1&per_page=${per_page}&offset=0&query=${query}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
+        
         .then(async (resp) => {
             let restrooms = resp.data;
     
@@ -150,6 +206,13 @@ const addResultToDOM = (restroom) => {
         <h4>${name}</h4>
         <p class="mb-0">${street}</p>
         <p class="mb-0">${city}, ${state}</p>
+        <div class="row">
+            <div class="col my-2">
+                ${accessible ? '<i title="Accessible" class="fa-brands fa-accessible-icon fa-2x"></i>' : ''}
+                ${unisex ? '<i title="Unisex/Gender Neutral" class="fa-solid fa-transgender fa-2x"></i>' : ''}
+                ${changing_table ? '<i title="Changing Table" class="fa-solid fa-baby fa-2x"></i>' : ''}
+            </div>
+        </div>
     </li>
     `);
 

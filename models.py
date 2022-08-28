@@ -43,8 +43,8 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.Text, nullable=False, unique=True)
     username = db.Column(db.Text, nullable=False, unique=True)
+    email = db.Column(db.Text, nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
@@ -66,7 +66,7 @@ class User(db.Model):
         return user
 
     @classmethod
-    def authenticate(cls, username, password):
+    def authenticate(cls, email, password):
         """Find user with `username` and `password`.
 
         This is a class method (call it on the class, not an individual user.)
@@ -76,7 +76,7 @@ class User(db.Model):
         If can't find matching user (or if password is wrong), returns False.
         """
 
-        user = cls.query.filter_by(username=username).first()
+        user = cls.query.filter_by(email=email).first()
 
         if user:
             is_auth = bcrypt.check_password_hash(user.password, password)

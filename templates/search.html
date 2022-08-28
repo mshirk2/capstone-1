@@ -15,25 +15,32 @@
                 <input name="query" class="form-control" placeholder="Find a Restroom">
 
                 <!-- Search Filters -->
-                <div>
-                    <input class="form-check-input" type="checkbox" id="accessible"/>
-                    <label class="form-check-label" for="accessible">Accessible</label>
-                </div>
-                <div>
-                    <input class="form-check-input" type="checkbox" id="unisex"/>
-                    <label class="form-check-label" for="unisex">Unisex</label>
-                </div>
-                <div>
-                    <input class="form-check-input" type="checkbox" id="changing-table"/>
-                    <label class="form-check-label" for="changing-table">Changing Table</label>
+                <div class="row">
+                    <div class="col form-group">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="accessible"/>
+                            <label class="form-check-label" for="accessible"><i title="Accessible" class="fa-brands fa-accessible-icon ml-2"></i>Accessible</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="unisex"/>
+                            <label class="form-check-label" for="unisex"><i title="Unisex/Gender Neutral" class="fa-solid fa-transgender"></i>Unisex</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="changing-table"/>
+                            <label class="form-check-label" for="changing-table"><i title="Changing Table" class="fa-solid fa-baby"></i>Changing Table</label>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Search button -->
                 <button class="btn btn-primary" id="search-button">
-                    <span class="fa fa-search"></span>
+                    <span class="fa-solid fa-magnifying-glass"></span>
                     Search
                 </button>
-                <button class="btn btn-primary" id="use-location">Search by Current Location</button>
+                <button class="btn btn-primary" id="use-location">
+                    <span class="fa-solid fa-location-pin"></span>
+                    Search by Current Location
+                </button>
             </form>
         </div>
     </div>

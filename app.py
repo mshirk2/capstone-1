@@ -23,6 +23,7 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+db.create_all()
 
 CURR_USER_KEY = "curr_user"
 
@@ -72,9 +73,8 @@ def signup():
         try:
             user = User.signup(
                 username=form.username.data,
-                password=form.password.data,
                 email=form.email.data,
-                image_url=form.image_url.data or User.image_url.default.arg,
+                password=form.password.data,
             )
             db.session.commit()
 
@@ -149,23 +149,6 @@ def page_not_found(e):
 
 #########################################################################
 # API routes
-
-# @app.route("/restrooms")
-# def get_restrooms():
-#     """Get data about all restrooms"""
-
-#     restrooms = [restroom.to_dict() for restroom in Restroom.query.all()]
-
-#     return jsonify(restrooms=restrooms)
-
-
-# @app.route("/restrooms/<int:restroom_id>")
-# def show_restroom(restroom_id):
-#     """Get data about a single restroom"""
-
-#     restroom = Restroom.query.get_or_404(restroom_id)
-
-#     return jsonify(restroom=restroom.to_dict())
 
 @app.route("/api/reverse-geocode")
 def get_reverse_geocode():
