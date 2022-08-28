@@ -16,7 +16,6 @@ class UserEditForm(FlaskForm):
 
     username = StringField('Username')
     email = StringField('Email', validators=[Email()])
-    location = StringField('(Optional) Location')
     password = PasswordField('Password', validators=[DataRequired()]) 
 
 

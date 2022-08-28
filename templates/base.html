@@ -21,28 +21,17 @@
           <ul class="nav navbar-nav navbar-right ml-2">
 
             <!-- Search -->
-            <!-- {% if request.endpoint != None %}
-            <li>
-              <form class="navbar-form navbar-right">
-                <input name="q" class="form-control" placeholder="Find a Restroom" id="search-button">
-                <button class="btn btn-default">
-                  <span class="fa fa-search"></span>
-                </button>
-              </form>
-            </li>
-            {% endif %} -->
-
             <li><a href="/search">Search</a></li>
 
             <!-- Register/Login/Logout -->
             {% if not g.user %}
             <li><a href="/signup">Sign up</a></li>
-            <li><a href="/login">Log in</a></li>
+            <li><a href="/login">Login</a></li>
             {% else %}
             <li>
               <a href="/users/{{ g.user.id }}">{{ g.user.username }}</a>
             </li>
-            <li><a href="/logout">Log out</a></li>
+            <li><a href="/logout">Logout</a></li>
             {% endif %}
           </ul>
         </div>

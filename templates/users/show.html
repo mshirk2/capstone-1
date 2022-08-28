@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if g.user.id == user.id %}
+    <div>
+        <h1>Hi, {{ user.username }}</h1>
+    </div>
+
+    <div class="container">
+        <a href="/users/profile" class="btn btn-secondary">Edit Profile</a>
+    </div>
+    
+    <div class="container">
+      <form method="POST" action="/users/delete" class="form-inline">
+            <button class="btn btn-danger ml-2">Delete Profile</button>
+        </form>
+    </div>
+
+{% else %}
+
+    <div>
+        <p>You don't have permission to access this page</p>
+        <a href="/">Return home</a>
+    </div>
+
+{% endif %}
+
+{% endblock %}
