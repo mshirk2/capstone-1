@@ -17,7 +17,7 @@
               <span>Restroom Finder</span>
             </a>
           </div>
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right ml-2">
 
             <!-- Search -->
             <!-- {% if request.endpoint != None %}
@@ -35,7 +35,7 @@
 
             <!-- Register/Login/Logout -->
             {% if not g.user %}
-            <li><a href="/signup">Sign up</a></li>
+            <li><a href="/register">Register</a></li>
             <li><a href="/login">Log in</a></li>
             {% else %}
             <li>

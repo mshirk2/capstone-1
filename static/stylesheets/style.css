@@ -1,0 +1,45 @@
+/* ============================== General */
+
+body {
+  background-color: #e6ecf0;
+}
+
+.form-control {
+  margin-bottom: 20px;
+}
+
+.btn:hover {
+  cursor: pointer;
+}
+
+
+/* ============================== Nav */
+
+.navbar {
+    background-color: #fff;
+    height: 46px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 9999;
+}
+
+.navbar a {
+    color: #66757f;
+    font-size: 13px;
+    font-weight: bold;
+}
+  
+.navbar a:hover {
+    color: #1c94e0;
+}
+  
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+  
+ul.nav.navbar-nav li {
+    margin: 0 0.5rem;
+    display: flex;
+}

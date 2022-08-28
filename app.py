@@ -66,7 +66,7 @@ def signup():
     and re-present form.
     """
 
-    form = UserAddForm()
+    form = RegisterForm()
 
     if form.validate_on_submit():
         try:
