@@ -12,10 +12,11 @@
           {% for error in field.errors %}
             <span class="text-danger">{{ error }}</span>
           {% endfor %}
+          {{ field.label(class="my-2") }}
           {{ field(placeholder=field.label.text, class="form-control") }}
         {% endfor %}
-
-        <p>To confirm changes, enter your password:</p>
+        <br>
+        <p class="my-3">To confirm changes, enter your password:</p>
         {% if form.password.errors %}
           {% for error in form.password.errors %}
             <span class="text-danger">
