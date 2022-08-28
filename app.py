@@ -79,7 +79,7 @@ def signup():
             db.session.commit()
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            flash("Email already taken", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -202,18 +202,18 @@ def page_not_found(e):
 ##################################################
 # API routes
 
-# @app.route("/api/reverse-geocode")
-# def get_reverse_geocode():
-#     """Get mapbox result using coordinates"""
+@app.route("/api/reverse-geocode")
+def get_reverse_geocode():
+    """Show top result through mapbox using coordinates"""
 
-#     lat = request.json['lat']
-#     lon = request.json['lon']
-#     token = os.environ['MAPBOX_TOKEN']
+    lat = request.json['lat']
+    lon = request.json['lon']
+    token = os.environ['MAPBOX_TOKEN']
 
-#     mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?worldview=cn&access_token={token}"
+    mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?worldview=cn&access_token={token}"
 
-#     resp = requests.get(mapbox_url)
-#     result = resp.json()['features'][0]['place_name']
+    resp = requests.get(mapbox_url)
+    result = resp.json()['features'][0]['place_name']
 
-#     return (jsonify(result=result), 200)
+    return (jsonify(result=result), 200)
 

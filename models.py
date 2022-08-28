@@ -38,7 +38,7 @@ class Restroom(db.Model):
         }
 
 class User(db.Model):
-    """User in the system."""
+    """User model"""
 
     __tablename__ = 'users'
 
@@ -67,7 +67,7 @@ class User(db.Model):
 
     @classmethod
     def authenticate(cls, email, password):
-        """Find user with `username` and `password`.
+        """Find user with `email` and `password`.
 
         This is a class method (call it on the class, not an individual user.)
         It searches for a user whose password hash matches this password

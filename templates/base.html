@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,50 +8,66 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="/static/stylesheets/style.css">
     <script src="https://kit.fontawesome.com/bbda3af127.js" crossorigin="anonymous"></script>
-</head>
-<body>
+    
+  </head>
+  <body>
     <!-- Nav bar -->
     <nav class="navbar navbar-expand">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <a href="/" class="navbar-brand">
-              <span>Restroom Finder</span>
-            </a>
-          </div>
-          <ul class="nav navbar-nav navbar-right ml-2">
-
-            <!-- Search -->
-            <li><a href="/search">Search</a></li>
-
-            <!-- Register/Login/Logout -->
-            {% if not g.user %}
-            <li><a href="/signup">Sign up</a></li>
-            <li><a href="/login">Login</a></li>
-            {% else %}
-            <li>
-              <a href="/users/{{ g.user.id }}">{{ g.user.username }}</a>
-            </li>
-            <li><a href="/logout">Logout</a></li>
-            {% endif %}
-          </ul>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">
+            <span>Restroom Finder</span>
+          </a>
         </div>
+        <ul class="nav navbar-nav navbar-right">
+
+          <!-- Search -->
+          <li class="nav-item">
+            <a class="nav-link" id="search-link" href="/search">Search</a>
+          </li>
+
+          <!-- No User Logged in -->
+          {% if not g.user %}
+          <li class="nav-item">
+            <a class="nav-link" href="/signup">Sign up</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+          
+          {% else %}
+
+          <!-- User Logged in -->
+          <li class="nav-item">
+            <a class="nav-link" href="/users/{{ g.user.id }}">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+
+          {% endif %}
+        </ul>
+      </div>
     </nav>
 
     <!-- Page Content -->
     <div class="container">
+      
+      <!-- Flashed Messages -->
+      {% for category, message in get_flashed_messages(with_categories=True) %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
 
-        <!-- Flashed Messages -->
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-
-        <!-- Flex Content -->
-        {% block content %}
-        {% endblock %}
+      <!-- Flex Content -->
+      {% block content %}
+      {% endblock %}
       
     </div>
+
+    <!-- Scripts -->
     <script src="https://unpkg.com/jquery"></script>
+    <script src="https://unpkg.com/bootstrap"></script>
     <script src="https://unpkg.com/axios/dist/axios.js"></script>
     <script src="/static/app.js"></script>
-</body>
+  </body>
 </html>
