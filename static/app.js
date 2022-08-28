@@ -17,7 +17,7 @@ const $query = $('#query');
 // Search output
 let RESTROOM_RESULTS = new Map();
 let CURRENT_MARKERS = [];
-const NUM_RESULTS = 15;
+const NUM_RESULTS = 100;
 const $resultsContainer = $('#results-container');
 const $listContainer = $('#list-container');
 const $resultsList = $('#results-list');
@@ -91,7 +91,12 @@ const getResultsByLocation = async (lat, lon) => {
                 return}
             for (let i = 0; i < restrooms.length; i++){
                 const restroom = restrooms[i];
-        
+                
+                // filter for changing table (can't be filtered through API)
+                if ($hasChangingTable.is(':checked') && !restroom.changing_table){
+                    continue;
+                }
+
                 const restroomData = {
                     name: restroom.name,
                     lat: restroom.latitude,
