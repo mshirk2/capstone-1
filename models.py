@@ -14,29 +14,6 @@ def connect_db(app):
     db.init_app(app)
 
 
-class Restroom(db.Model):
-    """Restroom model"""
-
-    __tablename__ = "restrooms"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-
-    saved_by_user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete="cascade"),
-        primary_key=True,
-    )
-
-    def to_dict(self):
-        """Return dictionary of restroom info"""
-
-        return {
-            "id": self.id,
-            "name": self.name,
-            "saved_by_user_id": self.saved_by_user_id,
-        }
-
 class User(db.Model):
     """User model"""
 
@@ -46,9 +23,14 @@ class User(db.Model):
     username = db.Column(db.Text, nullable=False, unique=True)
     email = db.Column(db.Text, nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
+    
+    searches = db.relationship('SavedSearch', backref='user', cascade='all, delete', passive_deletes=True)
+
 
     def __repr__(self):
-        return f"<User #{self.id}: {self.username}, {self.email}>"
+        """Show info about user"""
+
+        return f"<User - id: {self.id}, username: {self.username}, email: {self.email}>"
 
     @classmethod
     def signup(cls, username, email, password):
@@ -84,3 +66,22 @@ class User(db.Model):
                 return user
 
         return False
+
+class SavedSearch(db.Model):
+    "Model for saved searches"
+
+    __tablename__ = "saved_searches"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(100), nullable=False)
+    use_current_location = db.Column(db.Boolean, nullable=False, default=True)
+    query_string = db.Column(db.Text, nullable=True)
+    accessible = db.Column(db.Boolean, nullable=False, default=False)
+    unisex = db.Column(db.Boolean, nullable=False, default=False)
+    changing_table = db.Column(db.Boolean, nullable=False, default=False)
+
+    def __repr__(self):
+        """Show info about saved search"""
+
+        return f"<SavedSearch - id: {self.id}, user_id: {self.user.id}, name: {self.name}>"
