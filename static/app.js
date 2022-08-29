@@ -12,7 +12,6 @@ const $useLocation = $('#use-location');
 const $isAccessible = $('#accessible');
 const $isUnisex = $('#unisex');
 const $hasChangingTable = $('#changing-table');
-const $query = $('#query');
 
 // Search output
 let RESTROOM_RESULTS = new Map();
@@ -38,6 +37,60 @@ $useLocation.on('click', (evt) => {
     handleSearchByLocation();
 })
 
+const handleSearchByQuery = async () => {
+
+    // clear previous search results from internal storage, results list, and map
+    RESTROOM_RESULTS.clear();
+    $resultsList.empty();
+    clearMapMarkers();
+
+    // get locations based on query
+    const $query = $('#query').val()
+    console.log($query);
+
+    await getResultsByQuery($query);
+}
+
+const getResultsByQuery = async ($query) => {
+
+    const per_page = NUM_RESULTS;
+
+    resp = axios
+        .get(`${BASE_URL}/v1/restrooms/search?page=1&per_page=${per_page}&offset=0&query=${$query}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
+        
+        .then(async (resp) => {
+            let restrooms = resp.data;
+    
+            if (!restrooms){
+                console.log('no restrooms found')
+                return}
+            for (let i = 0; i < restrooms.length; i++){
+                const restroom = restrooms[i];
+        
+                const restroomData = {
+                    name: restroom.name,
+                    lat: restroom.latitude,
+                    lon: restroom.longitude,
+                };
+                
+                console.log(restroomData);
+                RESTROOM_RESULTS.set(restroom.id, restroom);
+        
+                addMapMarker(restroom);
+                addResultToDOM(restroom);
+        
+                if (RESTROOM_RESULTS.size === NUM_RESULTS){
+                    break;
+                }
+            }
+        
+            return restrooms
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
 
 const handleSearchByLocation = async () => {
 
@@ -50,7 +103,6 @@ const handleSearchByLocation = async () => {
     await setCurrentLocation();
 
 }
-
 
 const setCurrentLocation = async () => {
     // Default coordinates
@@ -122,61 +174,6 @@ const getResultsByLocation = async (lat, lon) => {
 };
 
 
-const handleSearchByQuery = async () => {
-
-    // clear previous search results from internal storage, results list, and map
-    RESTROOM_RESULTS.clear();
-    $resultsList.empty();
-    clearMapMarkers();
-
-    // get coordinates based on query
-
-    console.log($query);
-    await getResultsByQuery($query);
-
-}
-
-const getResultsByQuery = async (query) => {
-
-    const per_page = NUM_RESULTS;
-
-    resp = axios
-        .get(`${BASE_URL}/v1/restrooms/search?page=1&per_page=${per_page}&offset=0&query=${query}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
-        
-        .then(async (resp) => {
-            let restrooms = resp.data;
-    
-            if (!restrooms){
-                console.log('no restrooms found')
-                return}
-            for (let i = 0; i < restrooms.length; i++){
-                const restroom = restrooms[i];
-        
-                const restroomData = {
-                    name: restroom.name,
-                    lat: restroom.latitude,
-                    lon: restroom.longitude,
-                };
-                
-                console.log(restroomData);
-                RESTROOM_RESULTS.set(restroom.id, restroom);
-        
-                addMapMarker(restroom);
-                addResultToDOM(restroom);
-        
-                if (RESTROOM_RESULTS.size === NUM_RESULTS){
-                    break;
-                }
-            }
-        
-            return restrooms
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-};
-
-
 const addMapMarker = (restroom) => {
 
 }
@@ -208,7 +205,10 @@ const addResultToDOM = (restroom) => {
 
     let newLi = $(`
     <li class="list-group-item">
-        <h4>${name}</h4>
+        <div class="d-flex justify-content-between">
+            <h4>${name}</h4>
+            ${distance ? '<small class="ml-1">${distance.toFixed(2)} mi</small>' : ''}
+        </div>
         <p class="mb-0">${street}</p>
         <p class="mb-0">${city}, ${state}</p>
         <div class="row">
