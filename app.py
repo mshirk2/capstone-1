@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from sqlalchemy.exc import IntegrityError
 from forms import RegisterForm, UserEditForm, LoginForm
-from models import db, connect_db, User, Restroom
+from models import db, connect_db, User, SavedSearch
 import os
 
 app = Flask(__name__)

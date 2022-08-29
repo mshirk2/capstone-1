@@ -207,7 +207,7 @@ const addResultToDOM = (restroom) => {
     <li class="list-group-item">
         <div class="d-flex justify-content-between">
             <h4>${name}</h4>
-            ${distance ? '<small class="ml-1">${distance.toFixed(2)} mi</small>' : ''}
+            <p class="ml-1">${distance.toFixed(2)} mi</p>
         </div>
         <p class="mb-0">${street}</p>
         <p class="mb-0">${city}, ${state}</p>
