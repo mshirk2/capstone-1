@@ -189,7 +189,7 @@ def root():
 def show_search_page():
     """Show search page, including search form and results"""
 
-    return render_template("search.html", token=os.environ['MAPBOX_TOKEN'])
+    return render_template("search.html", mapboxToken=os.environ['MAPBOX_TOKEN'])
 
 
 @app.errorhandler(404)

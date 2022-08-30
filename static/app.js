@@ -74,6 +74,7 @@ const getResultsByQuery = async ($query) => {
                 };
                 
                 console.log(restroomData);
+                restroom.number = RESTROOM_RESULTS.size + 1;
                 RESTROOM_RESULTS.set(restroom.id, restroom);
         
                 addMapMarker(restroom);
@@ -111,13 +112,14 @@ const setCurrentLocation = async () => {
 
     if(!navigator.geolocation) {
         console.log('Geolocation is not supported')
-        await initializeMap(CURRENT_LAT, CURRENT_LON);
+        await showMap(CURRENT_LAT, CURRENT_LON);
     } else {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 CURRENT_LAT = position.coords.latitude;
                 CURRENT_LON = position.coords.longitude;
                 console.log('lat, lon = ', CURRENT_LAT, CURRENT_LON)
+                await showMap(CURRENT_LAT, CURRENT_LON);
                 await getResultsByLocation(CURRENT_LAT, CURRENT_LON);
                 return coords = {
                     lat: CURRENT_LAT,
@@ -156,6 +158,7 @@ const getResultsByLocation = async (lat, lon) => {
                 };
                 
                 console.log(restroomData);
+                restroom.number = RESTROOM_RESULTS.size + 1;
                 RESTROOM_RESULTS.set(restroom.id, restroom);
         
                 addMapMarker(restroom);
@@ -188,7 +191,7 @@ const clearMapMarkers = () => {
 
 const addResultToDOM = (restroom) => {
     const {
-        list_number,
+        number,
         id,
         name,
         street,
@@ -203,11 +206,18 @@ const addResultToDOM = (restroom) => {
         longitude,
     } = restroom; 
 
+    // Make sure distance doesn't throw an error if undefined
+    if (distance){
+        displayDistance = (distance.toFixed(2) + ' mi')
+    } else {
+        displayDistance = ''
+    }
+
     let newLi = $(`
     <li class="list-group-item">
         <div class="d-flex justify-content-between">
-            <h4>${name}</h4>
-            <p class="ml-1">${distance.toFixed(2)} mi</p>
+            <h4>${number}. ${name}</h4>
+            <p class="ml-1">${displayDistance}</p>
         </div>
         <p class="mb-0">${street}</p>
         <p class="mb-0">${city}, ${state}</p>
@@ -223,3 +233,44 @@ const addResultToDOM = (restroom) => {
 
     $resultsList.append(newLi);
 };
+
+const showMap = async(lat, lon) => {
+    $geocoderContainer.empty();
+
+    map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center:[lon, lat],
+        zoom: 10,
+    });
+
+    map.on('click', (event) => {
+        // If the user clicked on one of your markers, get its information.
+        const features = map.queryRenderedFeatures(event.point, {
+          layers: ['YOUR_LAYER_NAME'] // replace with your layer name
+        });
+        if (!features.length) {
+          return;
+        }
+        const feature = features[0];
+
+        const popup = new mapboxgl.Popup({ offset: [0, -15] })
+        .setLngLat(feature.geometry.coordinates)
+        .setHTML(
+        `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
+        )
+        .addTo(map);
+
+    });
+
+
+    let nav = new mapboxgl.NavigationControl();
+    Map.addControl(nav, 'top-right');
+
+    GEOCODER = new MapboxGeocoder({
+        mapboxgl: mapboxgl,
+        zoom: 11,
+    });
+
+    document.getElementById('geocoder-container').appendChild(map);
+}
