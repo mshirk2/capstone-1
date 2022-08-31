@@ -7,6 +7,7 @@
 
     <!-- Search Form -->
     <div id="search-form">
+        
         <!-- Saved searches -->
 
         <!-- Geocoder -->
@@ -32,33 +33,58 @@
             </div>
         </div>
 
-        <!-- Search buttons -->
-        <button class="btn btn-primary" id="search-button">
-            <span class="fa-solid fa-magnifying-glass"></span>
-            Search
-        </button>
-        <button class="btn btn-primary" id="use-location">
-            <span class="fa-solid fa-location-pin"></span>
-            Search by Current Location
-        </button>
+        <!-- Search button -->
+        <div class="col mb-2 mb-0-md">
+            <button class="btn btn-primary" id="search-button" type="submit" data-toggle="modal">Search</button>
+        </div>
     </div>
 
 
     <!-- Search Results -->
-    <div id="results-container">
+    <div id="results-container" class="row d-flex flex-column flex-row-reverse mt-2">
+
+        <!-- Results Map -->
+        <div id="map-container" class="col col-12 mb-2">
+            <div id="map" style="width: 100%; height: 400px"></div>
+            <script> mapboxgl.accessToken = '{{ mapboxToken }}'</script>
+        </div>
 
         <!-- Results List -->
         <div id="list-container" class="col pr-md-0">
             <ul id="results-list" class="list-group"></ul>
         </div>
 
-        <!-- Results Map -->
-        <div id="map-container" class="col col-12">
-            <div id="map"></div>
-            <script> mapboxgl.accessToken = '{{ mapboxToken }}'</script>
-        </div>
-
     </div>
+
+    <!-- <div
+    class="modal fade"
+    id="restrooms-modal"
+    tabindex="-1"
+    aria-labelledby="restrooms"
+    aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+            <span class="modal-title"></span>
+            <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+            >
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                Close
+            </button>
+            </div>
+        </div>
+        </div>
+    </div> -->
 
 
 

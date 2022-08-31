@@ -4,10 +4,6 @@ body {
   background-color: #e6ecf0;
 }
 
-.form-control {
-  margin-bottom: 10px;
-}
-
 .btn {
   margin: 20px 0px;
 }
@@ -74,4 +70,51 @@ ul.nav.navbar-nav li {
   bottom: 0; 
   width: 100%;
   border-radius: 20px;
+}
+
+.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+  width: 100%;
+  max-width: none;
+  box-shadow: none;
+  margin-bottom: 5px;
+}
+
+.marker {
+  color: #fff;
+  background-color: #FF5733;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  text-align: center;
+}
+
+.popup-title {
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.popup-address {
+  margin: 0;
+}
+
+
+
+/* Show map and list results side by side on larger screens */
+
+@media (min-width: 768px){
+
+  #results-list {
+    max-height: 425px;
+    overflow: auto;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .map-large {
+    padding-left: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }
