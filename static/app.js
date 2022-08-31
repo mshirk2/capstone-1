@@ -3,8 +3,9 @@ const BASE_URL = "https://www.refugerestrooms.org/api"
 // Search input
 let CURRENT_LAT;
 let CURRENT_LON;
+let USE_LOCATION;
 let GEOCODER;
-const $geocoderContainer = $('#geocoder-container');
+const $geocoderDiv = $('#geocoder');
 const $searchButton = $('#search-button');
 const $useLocation = $('#use-location');
 
@@ -109,6 +110,7 @@ const setCurrentLocation = async () => {
     // Default coordinates
     CURRENT_LAT = 39.9543;
     CURRENT_LON = 75.1657;
+    USE_LOCATION = false;
 
     if(!navigator.geolocation) {
         console.log('Geolocation is not supported')
@@ -118,6 +120,7 @@ const setCurrentLocation = async () => {
             async (position) => {
                 CURRENT_LAT = position.coords.latitude;
                 CURRENT_LON = position.coords.longitude;
+                USE_LOCATION = true;
                 console.log('lat, lon = ', CURRENT_LAT, CURRENT_LON)
                 await showMap(CURRENT_LAT, CURRENT_LON);
                 await getResultsByLocation(CURRENT_LAT, CURRENT_LON);
@@ -235,42 +238,42 @@ const addResultToDOM = (restroom) => {
 };
 
 const showMap = async(lat, lon) => {
-    $geocoderContainer.empty();
+    $geocoderDiv.empty();
 
-    map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center:[lon, lat],
-        zoom: 10,
+    MAP = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      zoom: 11,
+      center: [lon, lat],
     });
-
-    map.on('click', (event) => {
-        // If the user clicked on one of your markers, get its information.
-        const features = map.queryRenderedFeatures(event.point, {
-          layers: ['YOUR_LAYER_NAME'] // replace with your layer name
-        });
-        if (!features.length) {
-          return;
-        }
-        const feature = features[0];
-
-        const popup = new mapboxgl.Popup({ offset: [0, -15] })
-        .setLngLat(feature.geometry.coordinates)
-        .setHTML(
-        `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-        )
-        .addTo(map);
-
-    });
-
-
+  
     let nav = new mapboxgl.NavigationControl();
-    Map.addControl(nav, 'top-right');
-
+    MAP.addControl(nav, 'top-right');
+  
     GEOCODER = new MapboxGeocoder({
-        mapboxgl: mapboxgl,
-        zoom: 11,
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+      zoom: 11,
     });
-
-    document.getElementById('geocoder-container').appendChild(map);
-}
+  
+    document.getElementById('geocoder').appendChild(GEOCODER.onAdd(MAP));
+  
+    if (USE_LOCATION) {
+      // get reverse gecode search string to input into search box
+      const resp = await axios.post('/api/reverse-geocode', { lat, lon });
+      const query_string = resp.data.result;
+      GEOCODER.query(query_string);
+    }
+  
+    const layerList = document.getElementById('menu');
+    const inputs = layerList.getElementsByTagName('input');
+  
+    function switchLayer(layer) {
+      const layerId = layer.target.id;
+      MAP.setStyle('mapbox://styles/mapbox/' + layerId);
+    }
+  
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].onclick = switchLayer;
+    }
+};

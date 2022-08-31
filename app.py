@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from sqlalchemy.exc import IntegrityError
 from forms import RegisterForm, UserEditForm, LoginForm
 from models import db, connect_db, User, SavedSearch
+import requests
 import os
 
 app = Flask(__name__)
@@ -202,7 +203,7 @@ def page_not_found(e):
 ##################################################
 # API routes
 
-@app.route("/api/reverse-geocode")
+@app.route("/api/reverse-geocode", methods=["POST"])
 def get_reverse_geocode():
     """Show top result through mapbox using coordinates"""
 
@@ -213,7 +214,14 @@ def get_reverse_geocode():
     mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?worldview=cn&access_token={token}"
 
     resp = requests.get(mapbox_url)
-    result = resp.json()['features'][0]['place_name']
 
-    return (jsonify(result=result), 200)
+    # Return empty object if no results
+    if resp.json()['features'] == []:
+        return(jsonify(detail={}), 200)
+
+    try:
+        result = resp.json()['features'][0]['place_name']
+        return (jsonify(result=result), 200)
+    except e as exception:
+        return (jsonify(detail={}), 200)
 

@@ -7,42 +7,40 @@
 
     <!-- Search Form -->
     <div id="search-form">
-        <div class="form-group">
-            <div class="geocoder-container"></div>
-        </div>
-        <div class="form-group">
-            <form>
-                <input id="query" name="query" class="form-control" placeholder="Enter a search term or search by current location">
+        <!-- Saved searches -->
 
-                <!-- Search Filters -->
-                <div class="row">
-                    <div class="col form-group">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="accessible"/>
-                            <label class="form-check-label" for="accessible"><i title="Accessible" class="fa-brands fa-accessible-icon ml-2"></i>Accessible</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="unisex"/>
-                            <label class="form-check-label" for="unisex"><i title="Unisex/Gender Neutral" class="fa-solid fa-transgender"></i>Unisex</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="changing-table"/>
-                            <label class="form-check-label" for="changing-table"><i title="Changing Table" class="fa-solid fa-baby"></i>Changing Table</label>
-                        </div>
-                    </div>
+        <!-- Geocoder -->
+        <div class="form-group" id="geocoder-container">
+            <div id="geocoder" class="geocoder"></div>
+        </div>
+
+        <!-- Search Filters -->
+        <div class="row">
+            <div class="col form-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="accessible"/>
+                    <label class="form-check-label" for="accessible"><i title="Accessible" class="fa-brands fa-accessible-icon ml-2"></i>Accessible</label>
                 </div>
-
-                <!-- Search buttons -->
-                <button class="btn btn-primary" id="search-button">
-                    <span class="fa-solid fa-magnifying-glass"></span>
-                    Search
-                </button>
-                <button class="btn btn-primary" id="use-location">
-                    <span class="fa-solid fa-location-pin"></span>
-                    Search by Current Location
-                </button>
-            </form>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="unisex"/>
+                    <label class="form-check-label" for="unisex"><i title="Unisex/Gender Neutral" class="fa-solid fa-transgender"></i>Unisex</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="changing-table"/>
+                    <label class="form-check-label" for="changing-table"><i title="Changing Table" class="fa-solid fa-baby"></i>Changing Table</label>
+                </div>
+            </div>
         </div>
+
+        <!-- Search buttons -->
+        <button class="btn btn-primary" id="search-button">
+            <span class="fa-solid fa-magnifying-glass"></span>
+            Search
+        </button>
+        <button class="btn btn-primary" id="use-location">
+            <span class="fa-solid fa-location-pin"></span>
+            Search by Current Location
+        </button>
     </div>
 
 
