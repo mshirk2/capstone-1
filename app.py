@@ -203,15 +203,16 @@ def page_not_found(e):
 ##################################################
 # API routes
 
+
 @app.route("/api/reverse-geocode", methods=["POST"])
 def get_reverse_geocode():
     """Show top result through mapbox using coordinates"""
 
-    lat = request.json['lat']
     lon = request.json['lon']
+    lat = request.json['lat']
     token = os.environ['MAPBOX_TOKEN']
 
-    mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?worldview=cn&access_token={token}"
+    mapbox_url = f"https://api.mapbox.com/geocoding/v5/mapbox.places/{lon},{lat}.json?&access_token={token}"
 
     resp = requests.get(mapbox_url)
 

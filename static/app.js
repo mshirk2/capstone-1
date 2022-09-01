@@ -1,8 +1,9 @@
 const BASE_URL = "https://www.refugerestrooms.org/api"
+const SCREEN_BREAKPOINT = 767;
 
 // Search input
-let CURRENT_LAT;
 let CURRENT_LON;
+let CURRENT_LAT;
 let USE_LOCATION;
 let GEOCODER;
 const $geocoderDiv = $('#geocoder');
@@ -30,8 +31,15 @@ const $map = $('#map');
 
 $searchButton.on('click', (evt) => {
     evt.preventDefault();
+
+    if (!GEOCODER.inputString || !GEOCODER.lastSelected){
+        alert("Please enter a location to search")
+        return
+    }
     handleSearch();
 });
+
+
 
 
 const handleSearch = async () => {
@@ -46,9 +54,9 @@ const handleSearch = async () => {
     // get coordinates based on current or default location
     const coords = getCoordinates();
 
-    adjustMapForDeviceSize(coords.lat, coords.lon);
+    adjustMapForDeviceSize(coords.lon, coords.lat);
 
-    await getResults(coords.lat, coords.lon);
+    await getResults(coords.lon, coords.lat);
 
     hideSpinner();
 
@@ -56,19 +64,28 @@ const handleSearch = async () => {
 
 
 const getCoordinates = () => {
-    return coordinates = {
-        lat: CURRENT_LAT,
+    let coords = {
         lon: CURRENT_LON,
+        lat: CURRENT_LAT,
     }
+
+    if (GEOCODER.lastSelected){
+        let result = JSON.parse(GEOCODER.lastSelected);
+        const { coordinates } = result.geometry;
+        coords.lon = coordinates[0];
+        coords.lat = coordinates[1];
+    }
+
+    return coords;
 };
 
 
-const adjustMapForDeviceSize = (lat, lon) => {
+const adjustMapForDeviceSize = (lon, lat) => {
 // ajusts display so map and list display side by side on larger screens
-    if ($(window).width() > 750) {
-        if (!($mapContainer).hasClass('map-large')){
-            $mapContainer.addClass('col-md-8 map-large');
-            $map.addClass('map-large');
+    if ($(window).width() > SCREEN_BREAKPOINT) {
+        if (!($mapContainer).hasClass('split-screen')){
+            $mapContainer.addClass('col-md-8 split-screen');
+            $map.addClass('split-screen');
         }
 
         MAP.center = [lon, lat];
@@ -76,12 +93,12 @@ const adjustMapForDeviceSize = (lat, lon) => {
 };
 
 
-const getResults = async (lat, lon) => {
+const getResults = async (lon, lat) => {
 
     const per_page = NUM_RESULTS;
 
     resp = axios
-        .get(`${BASE_URL}/v1/restrooms/by_location?page=1&per_page=${per_page}&offset=0&lat=${lat}&lng=${lon}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
+        .get(`${BASE_URL}/v1/restrooms/by_location?page=1&per_page=${per_page}&offset=0&lng=${lon}&lat=${lat}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
         .then(async (resp) => {
             let restrooms = resp.data;
     
@@ -98,11 +115,10 @@ const getResults = async (lat, lon) => {
 
                 const restroomData = {
                     name: restroom.name,
-                    lat: restroom.latitude,
                     lon: restroom.longitude,
+                    lat: restroom.latitude,
                 };
                 
-                console.log(restroomData);
                 restroom.number = RESTROOM_RESULTS.size + 1;
                 RESTROOM_RESULTS.set(restroom.id, restroom);
         
@@ -124,30 +140,32 @@ const getResults = async (lat, lon) => {
 /////////////////////////////////////////////////
 // Map Functions
 
-const showMap = async(lat, lon) => {
+const showMap = async(lon, lat) => {
     $geocoderDiv.empty();
 
     MAP = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v11',
-      zoom: 13,
+      zoom: 12,
       center: [lon, lat],
     });
   
-    let nav = new mapboxgl.NavigationControl();
+    const nav = new mapboxgl.NavigationControl();
     MAP.addControl(nav, 'top-right');
   
     GEOCODER = new MapboxGeocoder({
       accessToken: mapboxgl.accessToken,
       mapboxgl: mapboxgl,
-      zoom: 13,
+      zoom: 12,
+    }).on('result', () => {
+        handleSearch();
     });
   
     document.getElementById('geocoder').appendChild(GEOCODER.onAdd(MAP));
   
     if (USE_LOCATION) {
-      // search using reverse geocode query string
-      const resp = await axios.post('/api/reverse-geocode', { lat, lon });
+      // Reverse geocode coordinates to get location name, populate search box with name
+      const resp = await axios.post('/api/reverse-geocode', { lon, lat });
       const query_string = resp.data.result;
       GEOCODER.query(query_string);
     }
@@ -155,7 +173,7 @@ const showMap = async(lat, lon) => {
 };
 
 
-const refreshMap = (lat, lon) => {
+const refreshMap = (lon, lat) => {
     $geocoderDiv.empty();
     if (GEOCODER.mapMarker){
         GEOCODER.mapMarker.remove();
@@ -166,12 +184,14 @@ const refreshMap = (lat, lon) => {
     GEOCODER = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
         mapboxgl: mapboxgl,
-        zoom: 13,
+        zoom: 12,
+    }).on('result', () => {
+        handleSearch();
     });
 
     document.getElementById('geocoder').appendChild(GEOCODER.onAdd(MAP));
 
-    adjustMapForDeviceSize(lat, lon);
+    adjustMapForDeviceSize(lon, lat);
 };
 
 
@@ -204,8 +224,8 @@ const addMapMarker = (restroom) => {
     };
     
     const el = document.createElement('div');
-    el.className = 'marker';
     el.innerText = number;
+    el.className = 'marker';
 
     const newMarker = new mapboxgl.Marker(el)
         .setLngLat(marker.geometry.coordinates)
@@ -245,8 +265,8 @@ const addResultToDOM = (restroom) => {
         accessible,
         unisex,
         changing_table,
-        latitude,
         longitude,
+        latitude,
     } = restroom; 
 
     // Make sure distance doesn't throw an error if undefined
@@ -299,24 +319,23 @@ const hideSpinner = () => {
 
 const setCurrentLocation = async () => {
     // Default coordinates
-    CURRENT_LAT = 39.954328;
     CURRENT_LON = -75.165717;
+    CURRENT_LAT = 39.954328;
     USE_LOCATION = false;
 
     if(!navigator.geolocation) {
         console.log('Geolocation is not supported')
-        await showMap(CURRENT_LAT, CURRENT_LON);
+        await showMap(CURRENT_LON, CURRENT_LAT);
     } else {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                CURRENT_LAT = position.coords.latitude;
                 CURRENT_LON = position.coords.longitude;
+                CURRENT_LAT = position.coords.latitude;
                 USE_LOCATION = true;
-                console.log('lat, lon = ', CURRENT_LAT, CURRENT_LON)
-                await showMap(CURRENT_LAT, CURRENT_LON);
+                await showMap(CURRENT_LON, CURRENT_LAT);
             },
             async () => {
-                await showMap(CURRENT_LAT, CURRENT_LON);
+                await showMap(CURRENT_LON, CURRENT_LAT);
             }
         );
     };

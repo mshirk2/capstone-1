@@ -4,10 +4,6 @@ body {
   background-color: #e6ecf0;
 }
 
-.btn {
-  margin: 20px 0px;
-}
-
 .btn:hover {
   cursor: pointer;
 }
@@ -61,6 +57,9 @@ ul.nav.navbar-nav li {
   color: rgba(134, 192, 0, 0.85);
 }
 
+#search-button {
+  margin: 10px 0 20px;
+}
 
 /* ============================== Map */
 
@@ -69,6 +68,7 @@ ul.nav.navbar-nav li {
   top: 0; 
   bottom: 0; 
   width: 100%;
+  height: 500px;
   border-radius: 20px;
 }
 
@@ -80,12 +80,14 @@ ul.nav.navbar-nav li {
 }
 
 .marker {
+  display: block;
   color: #fff;
   background-color: #FF5733;
-  height: 20px;
-  width: 20px;
+  height: 25px;
+  width: 25px;
   border-radius: 50%;
   cursor: pointer;
+  font-size: 15px;
   text-align: center;
 }
 
@@ -104,17 +106,24 @@ ul.nav.navbar-nav li {
 /* Show map and list results side by side on larger screens */
 
 @media (min-width: 768px){
-
   #results-list {
-    max-height: 425px;
+    max-height: 500px;
     overflow: auto;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    padding-right: 0;
+    border-radius: 20px 0px 0px 20px;
   }
 
-  .map-large {
+  #map.split-screen {
     padding-left: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0px 20px 20px 0px;
+  }
+}
+
+@media (min-height: 950px) {
+  #results-list {
+    max-height: 725px;
+  }
+  #map.split-screen {
+    height: 700px !important;
   }
 }
