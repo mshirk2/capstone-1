@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///restroom-finder'))
+    os.environ.get('DATABASE_URL', 'postgresql:///flusher'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
@@ -24,9 +24,9 @@ app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
-db.create_all()
 
 CURR_USER_KEY = "curr_user"
+AUTH_ERROR = "Authorization Error: You are not authorized to access this page."
 
 
 ##################################################
@@ -64,7 +64,7 @@ def signup():
 
     If form not valid, present form.
 
-    If the there already is a user with that username: flash message
+    If the there already is a user with that email: flash message
     and re-present form.
     """
 
@@ -98,8 +98,7 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.authenticate(form.email.data,
-                                 form.password.data)
+        user = User.authenticate(form.identifier.data, form.password.data)
 
         if user:
             do_login(user)
@@ -113,7 +112,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    """Handle logout of user."""
+    """Handle user logout."""
 
     do_logout()
     flash("Goodbye!", "success")
@@ -129,7 +128,7 @@ def show_user(user_id):
 
     user = User.query.get_or_404(user_id)
    
-    return render_template('users/show.html', user=user)
+    return render_template('users/show.html', user=user, AUTH_ERROR=AUTH_ERROR)
 
 
 @app.route('/users/profile', methods=["GET", "POST"])
@@ -137,7 +136,7 @@ def edit_profile():
     """Update profile for current user."""
 
     if not g.user:
-        flash("Access unauthorized.", "danger")
+        flash(AUTH_ERROR, "danger")
         return redirect("/")
     
     user = g.user
@@ -161,7 +160,7 @@ def delete_user():
     """Delete user."""
 
     if not g.user:
-        flash("Access unauthorized.", "danger")
+        flash(AUTH_ERROR, "danger")
         return redirect("/")
 
     do_logout()
@@ -173,7 +172,24 @@ def delete_user():
 
 
 ##################################################
-# Homepage, search, and error pages
+# Saved Search routes
+
+@app.route('/search/<int:search_id>')
+def show_saved_search(search_id):
+    """Show a saved search. Only accessible by user who saved the search."""
+
+    if not g.user.id == saved_search.user_id:
+        flash(AUTH_ERROR, "danger")
+        return redirect("/login")
+    
+    saved_search = SavedSearch.query.get_or_404(search_id)
+
+    return (jsonify(saved_search=saved_search.serialize()), 201)
+
+
+
+##################################################
+# Homepage, Search Page, and error pages
 
 
 @app.route('/')

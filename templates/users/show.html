@@ -3,24 +3,58 @@
 {% block content %}
 
 {% if g.user.id == user.id %}
-    <div>
+<div class="container">
+    <div class="mb-3">
         <h1>Hi, {{ user.username }}</h1>
     </div>
 
-    <div class="container">
+    <!-- Edit profile -->
+    <div>
         <a href="/users/profile" class="btn btn-secondary">Edit Profile</a>
     </div>
-    
-    <div class="container">
-      <form method="POST" action="/users/delete" class="form-inline">
-            <button class="btn btn-danger ml-2">Delete Profile</button>
+    <br>
+    <br>
+
+    <!-- Saved Searches -->
+    <h3>Saved Searches</h3>
+    {% if g.user.searches %}
+        <div id="searches-list" class="list-group my-3">
+        {% for search in g.user.searches %}
+        <div class="list-group-item d-flex align-items-center justify-content-between">
+            <a href="#" class="search-item" data-search-id="{{ user.searches.id }}">
+            {{ search.name }}
+            </a>
+            <div>
+                <!-- Edit search-->
+                <a href="#" id="saved-search-edit" class="text-dark" data-search-id="{{ user.searches.id }}">
+                    <i title="Edit Saved Search" class="fa-solid fa-pencil" data-search-id="{{ user.searches.id }}"></i>
+                </a>
+                <!-- Delete search -->
+                <a href="#" id="saved-search-delete" class="text-dark" data-search-id="{{ user.searches.id }}">
+                    <i title="Delete Saved Search" class="fa-solid fa-x" data-search-id="{{ user.searches.id }}"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <p>You haven't saved any searches yet!</p>
+    {% endif %}
+    <br>
+    <br>
+
+    <!-- Delete Profile -->
+    <div>
+        <form method="POST" action="/users/delete" class="form-inline">
+            <button class="btn btn-small btn-outline-danger">Delete Profile</button>
         </form>
     </div>
+
+</div>
 
 {% else %}
 
     <div>
-        <p>You don't have permission to access this page</p>
+        <p class="alert alert-danger">{{ AUTH_ERROR }}</p>
         <a href="/">Return home</a>
     </div>
 

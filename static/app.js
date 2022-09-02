@@ -40,8 +40,6 @@ $searchButton.on('click', (evt) => {
 });
 
 
-
-
 const handleSearch = async () => {
 
     showSpinner();
@@ -54,7 +52,7 @@ const handleSearch = async () => {
     // get coordinates based on current or default location
     const coords = getCoordinates();
 
-    adjustMapForDeviceSize(coords.lon, coords.lat);
+    adjustMapDisplay(coords.lon, coords.lat);
 
     await getResults(coords.lon, coords.lat);
 
@@ -80,7 +78,7 @@ const getCoordinates = () => {
 };
 
 
-const adjustMapForDeviceSize = (lon, lat) => {
+const adjustMapDisplay = (lon, lat) => {
 // ajusts display so map and list display side by side on larger screens
     if ($(window).width() > SCREEN_BREAKPOINT) {
         if (!($mapContainer).hasClass('split-screen')){
@@ -191,7 +189,7 @@ const refreshMap = (lon, lat) => {
 
     document.getElementById('geocoder').appendChild(GEOCODER.onAdd(MAP));
 
-    adjustMapForDeviceSize(lon, lat);
+    adjustMapDisplay(lon, lat);
 };
 
 

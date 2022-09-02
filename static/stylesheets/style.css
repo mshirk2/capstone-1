@@ -9,7 +9,6 @@ body {
 }
 
 
-
 /* ============================== Nav */
 
 .navbar {
@@ -114,7 +113,6 @@ ul.nav.navbar-nav li {
   }
 
   #map.split-screen {
-    padding-left: 0;
     border-radius: 0px 20px 20px 0px;
   }
 }
@@ -124,6 +122,12 @@ ul.nav.navbar-nav li {
     max-height: 725px;
   }
   #map.split-screen {
-    height: 700px !important;
+    height: 725px !important;
   }
+}
+
+/* ============================== Saved Searches */
+
+#searches-list a{
+  text-decoration: none;
 }
