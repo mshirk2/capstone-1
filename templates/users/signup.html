@@ -4,7 +4,7 @@
 
   <div class="row justify-content-center">
   <div class="col-md-7 col-lg-5">
-    <h2 class="join-message">Sign up for Restroom Finder</h2>
+    <h1>Create an account</h1>
     <form method="POST" id="user_form">
       {{ form.hidden_tag() }}
 
@@ -15,8 +15,15 @@
         {{ field(placeholder=field.label.text, class="form-control my-2") }}
       {% endfor %}
 
-      <button class="btn btn-primary btn-block">Sign me up!</button>
+      <button class="btn btn-primary btn-block">Let's go!</button>
     </form>
+    <br>
+    <br>
+    <div>
+      <p>Already have an account?
+        <a href="/login">Log in here</a>
+      </p>
+    </div>
 
     <div class="fixed-bottom text-center" style="height: 80px">
       <p>DEMO LOGIN - Username: DemoUser | Password: password</p>
