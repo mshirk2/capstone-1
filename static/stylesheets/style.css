@@ -41,7 +41,7 @@ ul.nav.navbar-nav li {
 /* ============================== Search */
 
 .fa-brands, .fa-solid{
-  margin-right: 0.3rem
+  margin-right: 0.3rem;
 }
 
 .fa-accessible-icon {
@@ -56,8 +56,11 @@ ul.nav.navbar-nav li {
   color: rgba(134, 192, 0, 0.85);
 }
 
-#search-button {
-  margin: 10px 0 20px;
+#search-button{
+  margin-right: 0.5rem;
+}
+#show-details {
+  text-decoration: none;
 }
 
 /* ============================== Map */
@@ -128,6 +131,6 @@ ul.nav.navbar-nav li {
 
 /* ============================== Saved Searches */
 
-#searches-list a{
+#searches-list a {
   text-decoration: none;
 }

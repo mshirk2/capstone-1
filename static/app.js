@@ -93,7 +93,8 @@ const adjustMapDisplay = (lon, lat) => {
 
 const getResults = async (lon, lat) => {
 
-    const per_page = NUM_RESULTS;
+    // add 50 extra results, in case changing table is checked (can't be filtered through API)
+    const per_page = NUM_RESULTS + 50; 
 
     resp = axios
         .get(`${BASE_URL}/v1/restrooms/by_location?page=1&per_page=${per_page}&offset=0&lng=${lon}&lat=${lat}&ada=${$isAccessible.is(':checked')}&unisex=${$isUnisex.is(':checked')}`)
@@ -110,12 +111,6 @@ const getResults = async (lon, lat) => {
                 if ($hasChangingTable.is(':checked') && !restroom.changing_table){
                     continue;
                 }
-
-                const restroomData = {
-                    name: restroom.name,
-                    lon: restroom.longitude,
-                    lat: restroom.latitude,
-                };
                 
                 restroom.number = RESTROOM_RESULTS.size + 1;
                 RESTROOM_RESULTS.set(restroom.id, restroom);
@@ -196,7 +191,6 @@ const refreshMap = (lon, lat) => {
 const addMapMarker = (restroom) => {
     const {
         number,
-        id,
         name,
         longitude,
         latitude,
@@ -204,10 +198,6 @@ const addMapMarker = (restroom) => {
         city,
         state,
         distance,
-        details,
-        accessible,
-        unisex,
-        changing_table,
       } = restroom;
 
     const marker = {
@@ -229,7 +219,7 @@ const addMapMarker = (restroom) => {
         .setLngLat(marker.geometry.coordinates)
         .setPopup(
             new mapboxgl.Popup().setHTML(`
-                <p class="popup-title">${name}<span class="float-right font-weight-normal ml-5"><i>   ${distance.toFixed(2)} mi</i></span></p>
+                <p class="popup-title">${name}<span class="font-weight-normal"><i> - ${distance.toFixed(2)} mi</i></span></p>
                 <p class="popup-address">${street}</p>
                 <p class="popup-address">${city}, ${state}</p>
             `)
@@ -253,26 +243,31 @@ const clearMapMarkers = () => {
 const addResultToDOM = (restroom) => {
     const {
         number,
-        id,
         name,
         street,
         city,
         state,
         distance,
-        details,
         accessible,
         unisex,
         changing_table,
-        longitude,
-        latitude,
+        comment,
+        directions,
+        created_at,
+        updated_at,
+        upvote,
+        downvote,
     } = restroom; 
-
+    
     // Make sure distance doesn't throw an error if undefined
     if (distance){
         displayDistance = (distance.toFixed(2) + ' mi')
     } else {
         displayDistance = ''
     }
+
+    // Reformat created_at and updated_at
+    short_created_at = created_at.substring(0,10);  short_updated_at = updated_at.substring(0,10);
 
     let newLi = $(`
     <li class="list-group-item">
@@ -282,11 +277,30 @@ const addResultToDOM = (restroom) => {
         </div>
         <p class="mb-0">${street}</p>
         <p class="mb-0">${city}, ${state}</p>
-        <div class="row">
+        <div class="row d-flex">
             <div class="col my-2">
                 ${accessible ? '<i title="Accessible" class="fa-brands fa-accessible-icon fa-2x"></i>' : ''}
                 ${unisex ? '<i title="Unisex/Gender Neutral" class="fa-solid fa-transgender fa-2x"></i>' : ''}
                 ${changing_table ? '<i title="Changing Table" class="fa-solid fa-baby fa-2x"></i>' : ''}
+            </div>
+
+            <a 
+                id="show-details"
+                href="#restroom-details${number}" 
+                class="col text-dark d-flex justify-content-end align-self-end mb-3" 
+                data-bs-toggle="collapse"  
+                role="button" 
+                aria-expanded="false" aria-controls="restroom-details${number}">
+                    <i class="fa-solid fa-arrow-down fa-lg"></i>
+            </a>
+            <div class="collapse" id="restroom-details${number}">
+                <div class="card card-body">
+                    <p>Details: ${comment}</p>
+                    <p>Directions: ${directions}</p>
+                    <p>Updated: ${short_updated_at}</p>
+                    <p>Created: ${short_created_at}</p>
+                    <p>Upvotes: ${upvote} | Downvotes: ${downvote}</p>
+                </div> 
             </div>
         </div>
     </li>

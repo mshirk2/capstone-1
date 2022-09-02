@@ -186,6 +186,16 @@ def show_saved_search(search_id):
 
     return (jsonify(saved_search=saved_search.serialize()), 201)
 
+@app.route('/search/<int:search_id>/edit')
+def edit_saved_search(search_id):
+    """Rename saved search"""
+
+    if not g.user.id == saved_search.user_id:
+        flash(AUTH_ERROR, "danger")
+        return redirect("/login")
+    
+    saved_search = SavedSearch.query.get_or_404(search_id)
+
 
 
 ##################################################
