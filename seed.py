@@ -9,9 +9,9 @@ db.create_all()
 
 # Sample users
 u1 = User.signup(
-    username = 'SmeveMcBichael05',
-    email='smeve@email.com', 
-    password='banana',
+    username = 'DemoUser',
+    email='demoemail@email.com', 
+    password='password',
     )
 
 u2 = User.signup(
@@ -21,9 +21,9 @@ u2 = User.signup(
     )
 
 u3 = User.signup(
-    username = 'DemoUser',
-    email='demoemail@email.com', 
-    password='password',
+    username = 'SmeveMcBichael05',
+    email='smeve@email.com', 
+    password='banana',
     )
 
 
@@ -31,18 +31,22 @@ db.session.add_all([u1, u2, u3])
 db.session.commit()
 
 s1 = SavedSearch(
-    user_id=u1.id,
-    name="My favorite Poo-poo spot", 
-    use_current_location=True,
+    user_id=u2.id,
+    name="My favorite Poo-poo spot",
+    query_string="",
+    lon=37.954,
+    lat=-75.944, 
     accessible=False,
     unisex=True,
     changing_table=False,
     )
 
 s2 = SavedSearch(
-    user_id=u1.id,
+    user_id=u2.id,
     name="My second favorite Poo-poo spot", 
-    use_current_location=True,
+    query_string="",
+    lon=31.05714,
+    lat=75.75145, 
     accessible=False,
     unisex=False,
     changing_table=False,
