@@ -21,9 +21,9 @@
         <div id="searches-list" class="list-group my-3">
         {% for search in g.user.searches %}
         <div class="list-group-item d-flex align-items-center justify-content-between">
-            <a href="/search" id="retrieve-search" data-search-id="{{ search.id }}">
+            <span id="retrieve-search" data-search-id="{{ search.id }}">
             {{ search.name }}
-            </a>
+            </span>
             <div>
                 <!-- Edit search-->
                 <a href="/search/{{ search.id }}/edit" id="saved-search-edit" class="text-dark">

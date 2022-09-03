@@ -53,7 +53,7 @@ const handleSearch = async () => {
     RESTROOM_RESULTS.clear();
     clearMapMarkers();
 
-    // get coordinates based on current or default location
+    // get coordinates based on current location
     const coords = getCoordinates();
 
     adjustMapDisplay(coords.lon, coords.lat);
@@ -387,17 +387,23 @@ const hideSavedCheck = () => {
 }
 
 $retrieveSearch.on('click', async(evt) => {
+    
     const search_id = $(evt.target).attr('data-search-id');
     console.log('search_id =', search_id)
     const resp = await axios.get(`/search/${search_id}`);
     const savedSearch = resp.data.saved_search;
 
+    window.location.href = "/search";
     clearMapMarkers();
     populateSearch(savedSearch);
 });
 
 const populateSearch = (savedSearch) => {
     // Populate search with saved search parameters
+    
+    if (!savedSearch){
+        return
+    }
     const {
         query_string,
         lon,
@@ -431,6 +437,7 @@ const setCurrentLocation = async () => {
     if(!navigator.geolocation) {
         console.log('Geolocation is not supported')
         await showMap(CURRENT_LON, CURRENT_LAT);
+        populateSearch();
     } else {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -438,9 +445,11 @@ const setCurrentLocation = async () => {
                 CURRENT_LAT = position.coords.latitude;
                 USE_LOCATION = true;
                 await showMap(CURRENT_LON, CURRENT_LAT);
+                populateSearch();
             },
             async () => {
                 await showMap(CURRENT_LON, CURRENT_LAT);
+                populateSearch();
             }
         );
     };
