@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div class="row justify-content-md-center">
+    <div class="col-md-9">
+        <h1>Edit Saved Search</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            {% for field in form if field.widget.input_type != 'hidden' and field.name != 'password' %}
+                {% for error in field.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+                {% if field.type == "BooleanField" %}
+                    <p class="mt-2">{{ field }} {{ field.label}}</p>
+                {% else %}
+                    {{ field.label(class="my-2") }}
+                    {{ field(placeholder=field.label.text, class="form-control") }}
+                {% endif %}
+            {% endfor %}
+
+            <div class="edit-btn-area">
+            <button class="btn btn-primary">Update</button>
+            <a href="/users/{{ saved_search.user_id }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+  </div>
+
+{% endblock %}

@@ -21,18 +21,19 @@
         <div id="searches-list" class="list-group my-3">
         {% for search in g.user.searches %}
         <div class="list-group-item d-flex align-items-center justify-content-between">
-            <a href="#" class="search-item" data-search-id="{{ user.searches.id }}">
+            <a href="/search" id="retrieve-search" data-search-id="{{ search.id }}">
             {{ search.name }}
             </a>
             <div>
                 <!-- Edit search-->
-                <a href="#" id="saved-search-edit" class="text-dark" data-search-id="{{ user.searches.id }}">
-                    <i title="Edit Saved Search" class="fa-solid fa-pencil" data-search-id="{{ user.searches.id }}"></i>
+                <a href="/search/{{ search.id }}/edit" id="saved-search-edit" class="text-dark">
+                    <i title="Edit Saved Search" class="fa-solid fa-pencil"></i>
                 </a>
                 <!-- Delete search -->
-                <a href="#" id="saved-search-delete" class="text-dark" data-search-id="{{ user.searches.id }}">
-                    <i title="Delete Saved Search" class="fa-solid fa-x" data-search-id="{{ user.searches.id }}"></i>
+                <a method="POST" href="/search/{{ search.id }}/delete"  id="saved-search-delete" class="text-dark">
+                    <i title="Delete Saved Search" class="fa-solid fa-x"></i>
                 </a>
+                
             </div>
         </div>
         {% endfor %}

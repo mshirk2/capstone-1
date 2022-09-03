@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField
-from wtforms.validators import DataRequired, Email, Length
+from wtforms import StringField, PasswordField, TextAreaField, IntegerField, BooleanField
+from wtforms.validators import DataRequired, Email, Length, Optional
 
 
 class RegisterForm(FlaskForm):
@@ -24,3 +24,13 @@ class LoginForm(FlaskForm):
 
     identifier = StringField(label='Username or Email', validators=[DataRequired()])
     password = PasswordField(label='Password', validators=[Length(min=6)])
+
+
+class SavedSearchEditForm(FlaskForm):
+    """Form for editing saved search"""
+
+    name = StringField(label='Name')
+    query_string = StringField(label='Search term')
+    accessible = BooleanField(label='Accessible')
+    unisex = BooleanField(label='Unisex')
+    changing_table = BooleanField(label='Changing Table')

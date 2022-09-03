@@ -73,15 +73,16 @@ class User(db.Model):
         return False
 
 class SavedSearch(db.Model):
-    "Model for saved searches"
+    "Model for saved search"
 
     __tablename__ = "saved_searches"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     name = db.Column(db.String(100), nullable=False)
-    use_current_location = db.Column(db.Boolean, nullable=False, default=True)
     query_string = db.Column(db.Text, nullable=True)
+    lon = db.Column(db.Integer, nullable=True)
+    lat = db.Column(db.Integer, nullable=True)
     accessible = db.Column(db.Boolean, nullable=False, default=False)
     unisex = db.Column(db.Boolean, nullable=False, default=False)
     changing_table = db.Column(db.Boolean, nullable=False, default=False)
@@ -90,3 +91,18 @@ class SavedSearch(db.Model):
         """Show info about saved search"""
 
         return f"<SavedSearch - id: {self.id}, user_id: {self.user.id}, name: {self.name}>"
+
+    def serialize(self):
+        """Return data in json-friendly format"""
+
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'query_string': self.query_string,
+            'lon': self.lon,
+            'lat': self.lat,
+            'accessible': self.accessible,
+            'unisex': self.unisex,
+            'changing_table': self.changing_table,
+        }

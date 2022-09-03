@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from sqlalchemy.exc import IntegrityError
-from forms import RegisterForm, UserEditForm, LoginForm
+from forms import RegisterForm, UserEditForm, LoginForm, SavedSearchEditForm
 from models import db, connect_db, User, SavedSearch
 import requests
 import os
@@ -174,29 +174,90 @@ def delete_user():
 ##################################################
 # Saved Search routes
 
-@app.route('/search/<int:search_id>')
-def show_saved_search(search_id):
-    """Show a saved search. Only accessible by user who saved the search."""
-
-    if not g.user.id == saved_search.user_id:
-        flash(AUTH_ERROR, "danger")
-        return redirect("/login")
+@app.route('/search/add', methods=["POST"])
+def add_saved_search():
+    """Add Saved Search"""
     
-    saved_search = SavedSearch.query.get_or_404(search_id)
+    if not g.user:
+        flash(f'Please log in first.', "danger")
+        return redirect(f"/login")
 
+    user_id = g.user.id
+    name = request.json['name']
+    query_string = request.json['query_string']
+    lon = request.json['lon']
+    lat = request.json['lat']
+    accessible = request.json['accessible']
+    unisex = request.json['unisex']
+    changing_table = request.json['changing_table']
+
+
+    saved_search = SavedSearch(
+        user_id=user_id,
+        name=name, 
+        query_string=query_string,
+        lon=lon, 
+        lat=lat,
+        accessible=accessible, 
+        unisex=unisex,
+        changing_table=changing_table
+    )
+    db.session.add(saved_search)
+    db.session.commit()
+    
     return (jsonify(saved_search=saved_search.serialize()), 201)
 
-@app.route('/search/<int:search_id>/edit')
-def edit_saved_search(search_id):
-    """Rename saved search"""
 
+@app.route('/search/<int:search_id>/edit', methods=["GET", "POST"])
+def edit_saved_search(search_id):
+    """Edit saved search"""
+    
+    saved_search = SavedSearch.query.get_or_404(search_id)
+    
     if not g.user.id == saved_search.user_id:
         flash(AUTH_ERROR, "danger")
         return redirect("/login")
     
+    form = SavedSearchEditForm(obj=saved_search)
+
+    if form.validate_on_submit():
+        saved_search.name = form.name.data
+
+        db.session.commit()
+
+        return redirect(f"/users/{saved_search.user_id}")
+
+    return render_template('saved_searches/edit.html', form=form, saved_search=saved_search)
+
+
+@app.route('/search/<int:search_id>/delete', methods=["GET","POST"])
+def delete_saved_search(search_id):
+    """Delete saved search"""
+
     saved_search = SavedSearch.query.get_or_404(search_id)
+    
+    if not g.user.id == saved_search.user_id:
+        flash(AUTH_ERROR, "danger")
+        return redirect("/login")
+
+    db.session.delete(saved_search)
+    db.session.commit()
+
+    return redirect(f"/users/{saved_search.user_id}")
 
 
+@app.route('/search/<int:search_id>')
+def populate_search(search_id):
+    """Individual saved search, returned jsonified to populate search parameters"""
+
+    saved_search = SavedSearch.query.get_or_404(search_id)
+    
+    if not g.user.id == saved_search.user_id:
+        flash(AUTH_ERROR, "danger")
+        return redirect("/login")
+
+
+    return (jsonify(saved_search=saved_search.serialize()), 201)
 
 ##################################################
 # Homepage, Search Page, and error pages

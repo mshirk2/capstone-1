@@ -8,6 +8,8 @@ let USE_LOCATION;
 let GEOCODER;
 const $geocoderDiv = $('#geocoder');
 const $searchButton = $('#search-button');
+const $saveSearchButton = $('#save-search-button');
+const $retrieveSearch = $('#retrieve-search');
 
 // Search filters
 const $isAccessible = $('#accessible');
@@ -36,6 +38,8 @@ $searchButton.on('click', (evt) => {
         alert("Please enter a location to search")
         return
     }
+    hideSavedCheck();
+
     handleSearch();
 });
 
@@ -316,7 +320,7 @@ const showSpinner = () => {
 // search button becomes loading spinner
     ($searchButton).attr("data-original-text", $($searchButton).html());
     ($searchButton).prop("disabled", true);
-    ($searchButton).html('<i class="spinner-border spinner-border-sm"></i> Loading...');
+    ($searchButton).html('<i class="spinner-grow spinner-grow-sm"></i> Loading...');
 };
 
 
@@ -324,6 +328,95 @@ const hideSpinner = () => {
     ($searchButton).prop("disabled", false);
     ($searchButton).html(($searchButton).attr("data-original-text"));
 };
+
+
+/////////////////////////////////////////////////
+// Save Search methods
+
+$saveSearchButton.on('click', () => {
+    handleSaveSearch();
+})
+
+const handleSaveSearch = async() => {
+    
+    const result = JSON.parse(GEOCODER.lastSelected);
+    const query_string = result.place_name;
+    const name = query_string; // name defaults to query_string, but user can edit if desired
+
+    const coordinates = getCoordinates();
+    const lon = coordinates.lon;
+    const lat = coordinates.lat;
+
+    const accessible = $isAccessible.is(':checked');
+    const unisex = $isUnisex.is(':checked');
+    const changing_table = $hasChangingTable.is(':checked');
+
+    const savedSearch = {
+        name,
+        query_string,
+        lon,
+        lat,
+        accessible,
+        unisex,
+        changing_table,
+    };
+
+    const resp = await axios.post('/search/add', savedSearch)
+    const newSavedSearch = resp.data.saved_search;
+
+    if(!newSavedSearch){
+        return
+    };
+    
+    showSavedCheck();
+    
+    handleSearch();
+}
+
+const showSavedCheck = () => {
+    // save search button becomes saved check
+    ($saveSearchButton).attr("data-original-text", $($saveSearchButton).html());
+    ($saveSearchButton)
+        .prop("disabled", true)
+        .html('<i class="fa-solid fa-check"></i> Saved');
+}
+
+const hideSavedCheck = () => {
+    ($saveSearchButton).prop("disabled", false);
+    ($saveSearchButton).html(($saveSearchButton).attr("data-original-text"));
+}
+
+$retrieveSearch.on('click', async(evt) => {
+    const search_id = $(evt.target).attr('data-search-id');
+    console.log('search_id =', search_id)
+    const resp = await axios.get(`/search/${search_id}`);
+    const savedSearch = resp.data.saved_search;
+
+    clearMapMarkers();
+    populateSearch(savedSearch);
+});
+
+const populateSearch = (savedSearch) => {
+    // Populate search with saved search parameters
+    const {
+        query_string,
+        lon,
+        lat,
+        accessible,
+        unisex,
+        changing_table,
+    } = savedSearch;
+
+    if (query_string) {
+        refreshMap(lon, lat);
+        GEOCODER.query(query_string);
+        GEOCODER.inputString = query_string;
+    }
+
+    $isAccessible.prop('checked', accessible);
+    $isUnisex.prop('checked', unisex);
+    $hasChangingTable.prop('checked', changing_table);
+}
 
 
 /////////////////////////////////////////////////
