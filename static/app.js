@@ -298,7 +298,8 @@ const addResultToDOM = (restroom) => {
                     <i class="fa-solid fa-arrow-down fa-lg"></i>
             </a>
             <div class="collapse" id="restroom-details${number}">
-                <div class="card card-body">
+                <div>
+                    <br>
                     <p>Details: ${comment}</p>
                     <p>Directions: ${directions}</p>
                     <p>Updated: ${short_updated_at}</p>

@@ -8,8 +8,15 @@
     </div>
 
     <!-- Edit profile -->
-    <div>
-        <a href="/users/{{ user.id }}/edit" class="btn btn-secondary">Edit Profile</a>
+    <div class="row justify-content-start">
+        <div class="col-3">
+            <a href="/users/{{ user.id }}/edit" class="btn btn-secondary px-4">Edit Profile</a>
+        </div>
+        <div class="col-4">
+            <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline">
+                <button class="btn btn-outline-danger px-4">Delete Profile</button>
+            </form>
+        </div>
     </div>
     <br>
     <br>
@@ -39,15 +46,6 @@
     {% else %}
     <p>You haven't saved any searches yet!</p>
     {% endif %}
-    <br>
-    <br>
-
-    <!-- Delete Profile -->
-    <div>
-        <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline">
-            <button class="btn btn-small btn-outline-danger">Delete Profile</button>
-        </form>
-    </div>
 
 </div>
 

@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1>Find a Restroom</h1>
-<div id="search-container" class="col mt-3 px-0">
+<div id="search-container" class="col mt-4 px-0">
 
     <!-- Search Form -->
     <div id="search-form">
@@ -32,18 +32,19 @@
         </div>
 
         <!-- Search button -->
-        <div class="form-group my-3">
-            <button class="btn btn-primary px-5" id="search-button" type="submit">Search</button>
+        <div class="form-group my-4">
+            <button class="btn btn-success px-5" id="search-button" type="submit">Search</button>
             <!-- Save Search will go to login page if user is not logged in -->
             <a 
                 {% if not g.user %} href='/login' {% endif %}
                 href='#'
-                class="btn btn-outline-secondary px-3" id="save-search-button">
+                class="btn btn-light px-3" id="save-search-button">
                 Save Search
             </a>
         </div>
     </div>
 
+    <br>
 
     <!-- Search Results -->
     <div id="results-container" class="row d-flex flex-column flex-row-reverse mt-2">
@@ -55,7 +56,7 @@
         </div>
 
         <!-- Results List -->
-        <div id="list-container" class="col pr-md-0">
+        <div id="list-container" class="col">
             <ul id="results-list" class="list-group"></ul>
         </div>
 
