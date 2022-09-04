@@ -63,10 +63,10 @@ ul.nav.navbar-nav li {
   text-decoration: none;
 }
 
-#retrieve-search {
+.retrieve-search {
   color:#1c94e0;
 }
-#retrieve-search:hover {
+.retrieve-search:hover {
   color:#255877;
   cursor: pointer;
 }

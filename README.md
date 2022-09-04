@@ -1,5 +1,5 @@
 # Flusher
-An app which facilitates safe, convenient access to public restrooms for transgender, intersex, and gender nonconforming individuals and individuals with disabilities and/or limited mobility.
+An app which facilitates safe, convenient access to public restrooms for transgender, intersex, and gender nonconforming individuals, and individuals with disabilities and/or limited mobility.
 
 [Try it out]
 
