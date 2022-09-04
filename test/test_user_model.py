@@ -1,8 +1,5 @@
 """User model tests."""
 
-# run these tests like:
-#
-#    python -m unittest tests/test_user_model.py
 
 import os
 from unittest import TestCase
@@ -13,6 +10,7 @@ os.environ['DATABASE_URL'] = "postgresql:///flusher-test"
 
 from app import app
 app.config['TESTING'] = True
+app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 db.create_all()
 

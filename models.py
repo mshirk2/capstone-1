@@ -78,11 +78,11 @@ class SavedSearch(db.Model):
     __tablename__ = "saved_searches"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     name = db.Column(db.String(100), nullable=False)
     query_string = db.Column(db.Text, nullable=True)
-    lon = db.Column(db.Integer, nullable=True)
-    lat = db.Column(db.Integer, nullable=True)
+    lon = db.Column(db.Float, nullable=True)
+    lat = db.Column(db.Float, nullable=True)
     accessible = db.Column(db.Boolean, nullable=False, default=False)
     unisex = db.Column(db.Boolean, nullable=False, default=False)
     changing_table = db.Column(db.Boolean, nullable=False, default=False)
