@@ -9,7 +9,7 @@ let GEOCODER;
 const $geocoderDiv = $('#geocoder');
 const $searchButton = $('#search-button');
 const $saveSearchButton = $('#save-search-button');
-const $retrieveSearch = $('#retrieve-search');
+const $retrieveSearch = $('.retrieve-search');
 
 // Search filters
 const $isAccessible = $('#accessible');
@@ -373,19 +373,6 @@ const handleSaveSearch = async() => {
     handleSearch();
 }
 
-const showSavedCheck = () => {
-    // save search button becomes saved check
-    ($saveSearchButton).attr("data-original-text", $($saveSearchButton).html());
-    ($saveSearchButton)
-        .prop("disabled", true)
-        .html('<i class="fa-solid fa-check"></i> Saved');
-}
-
-const hideSavedCheck = () => {
-    ($saveSearchButton).prop("disabled", false);
-    ($saveSearchButton).html(($saveSearchButton).attr("data-original-text"));
-}
-
 $retrieveSearch.on('click', async(evt) => {
     
     const search_id = $(evt.target).attr('data-search-id');
@@ -393,8 +380,6 @@ $retrieveSearch.on('click', async(evt) => {
     const resp = await axios.get(`/search/${search_id}`);
     const savedSearch = resp.data.saved_search;
 
-    window.location.href = "/search";
-    clearMapMarkers();
     populateSearch(savedSearch);
 });
 
@@ -404,6 +389,7 @@ const populateSearch = (savedSearch) => {
     if (!savedSearch){
         return
     }
+
     const {
         query_string,
         lon,
@@ -412,6 +398,8 @@ const populateSearch = (savedSearch) => {
         unisex,
         changing_table,
     } = savedSearch;
+
+    window.location.href = "/search"
 
     if (query_string) {
         refreshMap(lon, lat);
@@ -424,6 +412,19 @@ const populateSearch = (savedSearch) => {
     $hasChangingTable.prop('checked', changing_table);
 }
 
+
+const showSavedCheck = () => {
+    // save search button becomes saved check
+    ($saveSearchButton).attr("data-original-text", $($saveSearchButton).html());
+    ($saveSearchButton)
+        .prop("disabled", true)
+        .html('<i class="fa-solid fa-check"></i> Saved');
+}
+
+const hideSavedCheck = () => {
+    ($saveSearchButton).prop("disabled", false);
+    ($saveSearchButton).html(($saveSearchButton).attr("data-original-text"));
+}
 
 /////////////////////////////////////////////////
 // Initialize and get current location

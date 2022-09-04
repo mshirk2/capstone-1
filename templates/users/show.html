@@ -2,7 +2,6 @@
 
 {% block content %}
 
-{% if g.user.id == user.id %}
 <div class="container">
     <div class="mb-3">
         <h1>Hi, {{ user.username }}</h1>
@@ -10,7 +9,7 @@
 
     <!-- Edit profile -->
     <div>
-        <a href="/users/profile" class="btn btn-secondary">Edit Profile</a>
+        <a href="/users/{{ user.id }}/edit" class="btn btn-secondary">Edit Profile</a>
     </div>
     <br>
     <br>
@@ -21,7 +20,7 @@
         <div id="searches-list" class="list-group my-3">
         {% for search in g.user.searches %}
         <div class="list-group-item d-flex align-items-center justify-content-between">
-            <span id="retrieve-search" data-search-id="{{ search.id }}">
+            <span class="retrieve-search" data-search-id="{{ search.id }}">
             {{ search.name }}
             </span>
             <div>
@@ -45,20 +44,11 @@
 
     <!-- Delete Profile -->
     <div>
-        <form method="POST" action="/users/delete" class="form-inline">
+        <form method="POST" action="/users/{{ user.id }}/delete" class="form-inline">
             <button class="btn btn-small btn-outline-danger">Delete Profile</button>
         </form>
     </div>
 
 </div>
-
-{% else %}
-
-    <div>
-        <p class="alert alert-danger">{{ AUTH_ERROR }}</p>
-        <a href="/">Return home</a>
-    </div>
-
-{% endif %}
 
 {% endblock %}

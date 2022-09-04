@@ -125,17 +125,21 @@ def logout():
 @app.route('/users/<int:user_id>')
 def show_user(user_id):
     """Show user profile."""
-
+    
+    if not g.user or not g.user.id == user_id:
+        flash(AUTH_ERROR, "danger")
+        return redirect("/")
+    
     user = User.query.get_or_404(user_id)
    
-    return render_template('users/show.html', user=user, AUTH_ERROR=AUTH_ERROR)
+    return render_template('users/show.html', user=user)
 
 
-@app.route('/users/profile', methods=["GET", "POST"])
-def edit_profile():
+@app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
+def edit_profile(user_id):
     """Update profile for current user."""
 
-    if not g.user:
+    if not g.user or not g.user.id == user_id:
         flash(AUTH_ERROR, "danger")
         return redirect("/")
     
@@ -148,6 +152,7 @@ def edit_profile():
             user.email = form.email.data
 
             db.session.commit()
+            flash("Changed saved.", 'success')
             return redirect(f"/users/{user.id}")
 
         flash("Incorrect password. Please try again.", 'danger')
@@ -155,11 +160,11 @@ def edit_profile():
     return render_template('users/edit.html', form=form, user_id=user.id)
 
 
-@app.route('/users/delete', methods=["POST"])
-def delete_user():
+@app.route('/users/<int:user_id>/delete', methods=["POST"])
+def delete_user(user_id):
     """Delete user."""
 
-    if not g.user:
+    if not g.user or not g.user.id == user_id:
         flash(AUTH_ERROR, "danger")
         return redirect("/")
 
@@ -168,6 +173,7 @@ def delete_user():
     db.session.delete(g.user)
     db.session.commit()
 
+    flash("Profile deleted.", 'danger')
     return redirect("/signup")
 
 
