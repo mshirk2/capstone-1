@@ -7,8 +7,12 @@ import os
 
 app = Flask(__name__)
 
+
+uri = os.environ.get('DATABASE_URL', 'postgresql:///mshirk-flusher')
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    os.environ.get('DATABASE_URL', 'postgresql:///flusher'))
+    os.environ.get(uri, 'postgresql:///flusher'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
