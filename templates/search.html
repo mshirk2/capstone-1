@@ -3,7 +3,7 @@
 {% block content %}
 
 <h1>Find a Restroom</h1>
-<div id="search-container" class="col mt-4 px-0">
+<div id="search-container" class="mt-4 px-0">
 
     <!-- Search Form -->
     <div id="search-form">
@@ -50,13 +50,13 @@
     <div id="results-container" class="row d-flex flex-column flex-row-reverse mt-2">
 
         <!-- Results Map -->
-        <div id="map-container" class="col col-12 mb-2">
+        <div id="map-container" class="col-12 mb-2 px-0">
             <div id="map"></div>
             <script> mapboxgl.accessToken = '{{ mapboxToken }}'</script>
         </div>
 
         <!-- Results List -->
-        <div id="list-container" class="col">
+        <div id="list-container" class="col px-0">
             <ul id="results-list" class="list-group"></ul>
         </div>
 
