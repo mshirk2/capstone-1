@@ -13,7 +13,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
 # Access tokens
-from tokens import SECRET_KEY, MAPBOX_TOKEN
+try:
+    from tokens import SECRET_KEY, MAPBOX_TOKEN
+except Exception as e:
+    print(e)
+            
 os.environ['SECRET_KEY'] = SECRET_KEY
 os.environ['MAPBOX_TOKEN'] = MAPBOX_TOKEN
 
