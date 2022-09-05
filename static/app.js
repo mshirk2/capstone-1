@@ -86,6 +86,7 @@ const adjustMapDisplay = (lon, lat) => {
 // ajusts display so map and list display side by side on larger screens
     if ($(window).width() > SCREEN_BREAKPOINT) {
         if (!($mapContainer).hasClass('split-screen')){
+            $mapContainer.removeClass('col-12')
             $mapContainer.addClass('col-md-8 split-screen');
             $map.addClass('split-screen');
         }
@@ -375,21 +376,22 @@ const handleSaveSearch = async() => {
 }
 
 $retrieveSearch.on('click', async(evt) => {
-    
-    const search_id = $(evt.target).attr('data-search-id');
-    console.log('search_id =', search_id)
-    const resp = await axios.get(`/search/${search_id}`);
-    const savedSearch = resp.data.saved_search;
 
-    populateSearch(savedSearch);
+    // Listen for click on list of saved searches, get id of target
+    const search_id = $(evt.target).attr('data-search-id');
+    
+    // Save the search id to the session, so we can access it on the search page
+    sessionStorage.setItem('savedSearch', search_id)
+
+    window.location.href = "/search?saved=" + search_id
 });
 
-const populateSearch = (savedSearch) => {
-    // Populate search with saved search parameters
+
+const loadSavedSearch = async(search_id) => {
     
-    if (!savedSearch){
-        return
-    }
+    const resp = await axios.get(`/search/${search_id}`);
+
+    const savedSearch = resp.data.saved_search;
 
     const {
         query_string,
@@ -400,17 +402,16 @@ const populateSearch = (savedSearch) => {
         changing_table,
     } = savedSearch;
 
-    window.location.href = "/search"
-
-    if (query_string) {
-        refreshMap(lon, lat);
-        GEOCODER.query(query_string);
-        GEOCODER.inputString = query_string;
-    }
-
     $isAccessible.prop('checked', accessible);
     $isUnisex.prop('checked', unisex);
     $hasChangingTable.prop('checked', changing_table);
+    
+    await getResults(lon, lat);
+    await showMap(lon, lat);
+    GEOCODER.inputString = query_string;
+    GEOCODER.query(query_string);
+
+    sessionStorage.removeItem('savedSearch');
 }
 
 
@@ -439,7 +440,6 @@ const setCurrentLocation = async () => {
     if(!navigator.geolocation) {
         console.log('Geolocation is not supported')
         await showMap(CURRENT_LON, CURRENT_LAT);
-        populateSearch();
     } else {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
@@ -447,11 +447,9 @@ const setCurrentLocation = async () => {
                 CURRENT_LAT = position.coords.latitude;
                 USE_LOCATION = true;
                 await showMap(CURRENT_LON, CURRENT_LAT);
-                populateSearch();
             },
             async () => {
                 await showMap(CURRENT_LON, CURRENT_LAT);
-                populateSearch();
             }
         );
     };
@@ -459,7 +457,13 @@ const setCurrentLocation = async () => {
 
 
 const initialize = () => {
-    setCurrentLocation();
+    let search_id = sessionStorage.getItem('savedSearch')   
+
+    if (search_id){
+        loadSavedSearch(search_id);
+    } else {
+        setCurrentLocation()
+    };
 };
 
 

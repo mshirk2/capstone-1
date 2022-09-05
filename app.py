@@ -180,12 +180,26 @@ def delete_user(user_id):
 ##################################################
 # Saved Search routes
 
+
+@app.route('/search/<int:search_id>')
+def populate_search(search_id):
+    """Individual saved search, returned jsonified to populate search parameters"""
+
+    saved_search = SavedSearch.query.get_or_404(search_id)
+    
+    if not g.user.id == saved_search.user_id:
+        flash(AUTH_ERROR, "danger")
+        return redirect("/login")
+
+
+    return (jsonify(saved_search=saved_search.serialize()), 201)
+
+
 @app.route('/search/add', methods=["POST"])
 def add_saved_search():
     """Add Saved Search"""
     
     if not g.user:
-        flash(f'Please log in first.', "danger")
         return redirect(f"/login")
 
     user_id = g.user.id
@@ -251,19 +265,6 @@ def delete_saved_search(search_id):
 
     return redirect(f"/users/{saved_search.user_id}")
 
-
-@app.route('/search/<int:search_id>')
-def populate_search(search_id):
-    """Individual saved search, returned jsonified to populate search parameters"""
-
-    saved_search = SavedSearch.query.get_or_404(search_id)
-    
-    if not g.user.id == saved_search.user_id:
-        flash(AUTH_ERROR, "danger")
-        return redirect("/login")
-
-
-    return (jsonify(saved_search=saved_search.serialize()), 201)
 
 ##################################################
 # Homepage, Search Page, and error pages
