@@ -8,14 +8,14 @@ import os
 app = Flask(__name__)
 
 
-uri = os.environ.get('DATABASE_URL')
+uri = os.environ.get('DATABASE_URL') or 'postgresql:///flusher'
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 
-# Access tokens, not found on heroku
+# Access tokens, checking locally first then in Heroku environ variables
 try:
     from tokens import SECRET_KEY, MAPBOX_TOKEN
 except Exception as e:
