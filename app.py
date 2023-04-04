@@ -7,11 +7,7 @@ import os
 
 app = Flask(__name__)
 
-# for running locally
-# uri = 'postgresql:///flusher'
-
-# for running on Heroku
-uri = os.environ.get('DATABASE_URL')
+uri = os.environ.get('DATABASE_URL') or 'postgresql:///flusher'
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
@@ -32,13 +28,13 @@ try:
     os.environ['MAPBOX_TOKEN'] = MAPBOX_TOKEN
 except Exception as e:
     print(e)
-            
+
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']          
 
 # Debug Toolbar
-from flask_debugtoolbar import DebugToolbarExtension
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
-debug = DebugToolbarExtension(app)
+# from flask_debugtoolbar import DebugToolbarExtension
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
