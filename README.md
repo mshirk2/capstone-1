@@ -78,7 +78,7 @@ To run locally, you will need a [Mapbox](https://docs.mapbox.com/help/getting-st
     ```
 
 ### Run Tests
-After installing locally use this command to 
+After installing locally, you can run tests as follows:
 1. Create PostgresQL test database
     ```
     (venv) $ createdb flusher-test
